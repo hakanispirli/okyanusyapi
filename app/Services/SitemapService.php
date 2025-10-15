@@ -136,11 +136,17 @@ class SitemapService
             // Add gallery images if exists
             if ($service->gallery_images && is_array($service->gallery_images)) {
                 foreach (array_slice($service->gallery_images, 0, 5) as $galleryImage) {
-                    $images[] = [
-                        'loc' => $this->getImageUrl($galleryImage),
-                        'title' => $service->title . ' - Galeri',
-                        'caption' => $service->description,
-                    ];
+                    // Handle both old format (string) and new format (array with url/alt)
+                    $imageUrl = is_array($galleryImage) ? ($galleryImage['url'] ?? '') : $galleryImage;
+                    $imageAlt = is_array($galleryImage) ? ($galleryImage['alt'] ?? '') : '';
+
+                    if ($imageUrl) {
+                        $images[] = [
+                            'loc' => $this->getImageUrl($imageUrl),
+                            'title' => $service->title . ' - Galeri',
+                            'caption' => $imageAlt ?: $service->description,
+                        ];
+                    }
                 }
             }
 
@@ -251,11 +257,17 @@ class SitemapService
             // Add gallery images if exists
             if ($blog->gallery_images && is_array($blog->gallery_images)) {
                 foreach (array_slice($blog->gallery_images, 0, 5) as $galleryImage) {
-                    $images[] = [
-                        'loc' => $this->getImageUrl($galleryImage),
-                        'title' => $blog->title . ' - Galeri',
-                        'caption' => $blog->excerpt,
-                    ];
+                    // Handle both old format (string) and new format (array with url/alt)
+                    $imageUrl = is_array($galleryImage) ? ($galleryImage['url'] ?? '') : $galleryImage;
+                    $imageAlt = is_array($galleryImage) ? ($galleryImage['alt'] ?? '') : '';
+
+                    if ($imageUrl) {
+                        $images[] = [
+                            'loc' => $this->getImageUrl($imageUrl),
+                            'title' => $blog->title . ' - Galeri',
+                            'caption' => $imageAlt ?: $blog->excerpt,
+                        ];
+                    }
                 }
             }
 
@@ -509,9 +521,18 @@ class SitemapService
      */
     private function getImageUrl(string $imagePath): string
     {
-        return str_starts_with($imagePath, 'http')
-            ? $imagePath
-            : config('app.url') . '/' . ltrim($imagePath, '/');
+        // Handle empty or null paths
+        if (empty($imagePath)) {
+            return '';
+        }
+
+        // If it's already a full URL, return as is
+        if (str_starts_with($imagePath, 'http')) {
+            return $imagePath;
+        }
+
+        // If it's a relative path, make it absolute
+        return config('app.url') . '/' . ltrim($imagePath, '/');
     }
 
     /**
