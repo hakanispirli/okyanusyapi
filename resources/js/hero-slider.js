@@ -37,7 +37,7 @@ export default () => ({
             description: 'Çatılarınızın izolasyonunu güçlendirerek, revize işlemleri ile uzun ömürlü ve dayanıklı çatı sistemleri sunuyoruz.',
             image: '/images/hero/cati.jpg',
             cta: { text: 'Hizmetlerimiz', link: '/hizmetlerimiz' },
-            ctaSecondary: { text: 'Blog', link: '/blog' }
+            ctaSecondary: { text: 'Uygulamalar', link: '/uygulamalar' }
         }
     ],
 
