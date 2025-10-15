@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 5rem;
+    }
+
+    body {
+        @apply text-corporate-900 antialiased;
+        font-feature-settings: 'cv11', 'ss01';
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+@layer utilities {
+    /* Custom smooth transitions */
+    .transition-all-smooth {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Modern backdrop blur support */
+    @supports (backdrop-filter: blur(1px)) {
+        .backdrop-blur-safari {
+            backdrop-filter: blur(12px);
+        }
+    }
+
+    /* Smooth scrolling for all browsers */
+    .scroll-smooth {
+        scroll-behavior: smooth;
+    }
+
+    /* Hero slider progress animation */
+    @keyframes slideProgress {
+        from {
+            width: 0%;
+        }
+        to {
+            width: 100%;
+        }
+    }
+
+    .animate-progress {
+        animation: slideProgress 5s linear;
+    }
+
+    /* Smooth fade in animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+    }
+}

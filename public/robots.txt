@@ -1,0 +1,5 @@
+User-agent: *
+Disallow:
+
+# XML Sitemap
+Sitemap: https://okyanusyapi.com/sitemap.xml
