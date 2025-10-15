@@ -250,7 +250,7 @@ class Blog extends Model
         $wordCount = str_word_count(strip_tags($content));
         $minutesToRead = round($wordCount / 200); // Average reading speed: 200 words per minute
 
-        return max(1, $minutesToRead);
+        return (int) max(1, $minutesToRead);
     }
 
     /**
