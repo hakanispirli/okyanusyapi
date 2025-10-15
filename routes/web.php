@@ -18,7 +18,7 @@ Route::get('/uygulamalar/kategori/{category}', [BlogController::class, 'category
 Route::get('/uygulamalar/etiket/{tag}', [BlogController::class, 'tag'])->name('blogs.tag');
 Route::get('/uygulamalar/{blog}', [BlogController::class, 'show'])->name('blogs.show');
 Route::get('/iletisim', [ContactController::class, 'index'])->name('contact');
-Route::post('/iletisim', [ContactController::class, 'store'])->name('contact.store');
+Route::post('/iletisim', [ContactController::class, 'store'])->name('contact.store')->middleware('throttle:5,1');
 
 // Policy Routes
 Route::get('/gizlilik-politikasi', [PolicyController::class, 'privacyPolicy'])->name('privacy-policy');

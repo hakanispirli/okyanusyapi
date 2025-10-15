@@ -8,6 +8,7 @@ use App\Models\Blog;
 use App\Models\BlogCategory;
 use App\Models\BlogTag;
 use App\Http\Controllers\Controller;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -70,22 +71,32 @@ class BlogController extends Controller
                 ->limit(3)
                 ->get();
 
+            // Generate SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo(null, 'blogs');
+
             return view('frontend.blogs.index', compact(
                 'blogs',
                 'categories',
                 'popularTags',
-                'featuredBlogs'
+                'featuredBlogs',
+                'seoData'
             ));
         } catch (\Exception $e) {
             Log::error('Bloglar listelenirken hata oluştu: ' . $e->getMessage(), [
                 'exception' => $e,
             ]);
 
+            // Fallback SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo(null, 'blogs');
+
             return view('frontend.blogs.index', [
                 'blogs' => collect(),
                 'categories' => collect(),
                 'popularTags' => collect(),
                 'featuredBlogs' => collect(),
+                'seoData' => $seoData,
             ]);
         }
     }
@@ -146,12 +157,17 @@ class BlogController extends Controller
                 ->limit(3)
                 ->get();
 
+            // Generate SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo($category, 'blog-category');
+
             return view('frontend.blogs.category', compact(
                 'category',
                 'blogs',
                 'categories',
                 'popularTags',
-                'featuredBlogs'
+                'featuredBlogs',
+                'seoData'
             ));
         } catch (\Exception $e) {
             Log::error('Kategori blogları listelenirken hata oluştu: ' . $e->getMessage(), [
@@ -214,12 +230,17 @@ class BlogController extends Controller
                 ->limit(3)
                 ->get();
 
+            // Generate SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo($tag, 'blog-tag');
+
             return view('frontend.blogs.tag', compact(
                 'tag',
                 'blogs',
                 'categories',
                 'popularTags',
-                'featuredBlogs'
+                'featuredBlogs',
+                'seoData'
             ));
         } catch (\Exception $e) {
             Log::error('Tag blogları listelenirken hata oluştu: ' . $e->getMessage(), [
@@ -273,12 +294,17 @@ class BlogController extends Controller
                 ->orderBy('name')
                 ->get();
 
+            // Generate SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo($blog, 'blog');
+
             return view('frontend.blogs.show', compact(
                 'blog',
                 'relatedBlogs',
                 'recentBlogs',
                 'popularTags',
-                'categories'
+                'categories',
+                'seoData'
             ));
         } catch (\Exception $e) {
             Log::error('Blog görüntülenirken hata oluştu: ' . $e->getMessage(), [

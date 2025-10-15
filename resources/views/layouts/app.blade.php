@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    @if($seoData)
+        <x-seo :data="$seoData" />
+    @else
+        <title>{{ $siteInformation->title ?? config('app.name', 'Okyanus Yapı') }}</title>
+        <meta name="description" content="Okyanus Yapı olarak kaliteli konut inşaatı hizmetleri, ısı ve su yalıtımı işleri, çelik işleri ve daha fazlası. Doğal ve sağlıklı ürünler için bizi tercih edin.">
+    @endif
+
     <!-- PWA Meta Tags -->
     <meta name="application-name" content="Okyanus Yapı">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -39,7 +46,6 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <x-seo />
 </head>
 
 <body class="font-sans antialiased">

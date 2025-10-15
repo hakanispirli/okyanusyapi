@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seoData="$seoData">
     <!-- Hero Section -->
     @include('frontend.home.sections.hero-section')
 

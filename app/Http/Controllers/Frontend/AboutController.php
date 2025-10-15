@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Services\SeoService;
 use Illuminate\Support\Facades\Auth;
 
 class AboutController extends Controller
@@ -18,18 +19,23 @@ class AboutController extends Controller
     public function index(): View
     {
         try {
-            return view('frontend.about.index');
+            // Generate SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo(null, 'about');
+
+            return view('frontend.about.index', compact('seoData'));
         } catch (\Exception $e) {
             Log::error('Error in AboutController@index: ' . $e->getMessage(), [
                 'exception' => $e,
                 'user_id' => Auth::id() ?? null,
             ]);
 
+            // Fallback SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo(null, 'about');
+
             return view('frontend.about.index', [
-                'seoData' => [
-                    'title' => 'Hakkımızda - Okyanus Yapı',
-                    'description' => 'Okyanus Yapı hakkında bilgi edinin.',
-                ],
+                'seoData' => $seoData,
                 'statistics' => []
             ]);
         }

@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seoData="$seoData">
     {{-- Breadcrumb - Shadcn-UI Style --}}
     <nav class="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -235,68 +235,6 @@
                                 </div>
                                 <span class="text-sm text-gray-600">Ulusal ve uluslararası arenada büyümek</span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- Divider Line --}}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-    </div>
-
-    {{-- CTA Section --}}
-    <section class="bg-gradient-to-br from-corporate-950 via-corporate-900 to-primary-900 py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500/20 rounded-full text-primary-200 text-sm font-medium mb-6">
-                    <x-lucide-sparkles class="w-4 h-4" />
-                    <span>Projeleriniz için hazırız</span>
-                </div>
-
-                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-white mb-4">
-                    Hayalinizdeki Projeyi Birlikte Gerçekleştirelim
-                </h2>
-
-                <p class="text-gray-200 text-lg mb-8 max-w-2xl mx-auto">
-                    30 yılı aşkın deneyimimiz ve uzman ekibimizle projeniz için en iyi çözümleri sunuyoruz.
-                </p>
-
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-                    <a
-                        href="{{ route('contact') }}"
-                        class="inline-flex items-center gap-2 px-8 py-4 bg-primary-600 text-white rounded-lg font-semibold text-lg hover:bg-primary-700 transition-colors duration-200 group">
-                        <span>Ücretsiz Teklif Alın</span>
-                        <x-lucide-arrow-right class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                    </a>
-                    <a
-                        href="tel:+905XXXXXXXXX"
-                        class="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 text-white rounded-lg font-medium hover:bg-white hover:text-gray-900 transition-colors duration-200">
-                        <x-lucide-phone class="w-4 h-4" />
-                        <span>Hemen Ara</span>
-                    </a>
-                </div>
-
-                {{-- Contact Info --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                    <div class="flex items-center justify-center gap-3 text-gray-200">
-                        <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                            <x-lucide-phone class="w-5 h-5" />
-                        </div>
-                        <div class="text-left">
-                            <div class="text-sm text-gray-300">Telefon</div>
-                            <div class="font-medium">+90 (5XX) XXX XX XX</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-center gap-3 text-gray-200">
-                        <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                            <x-lucide-mail class="w-5 h-5" />
-                        </div>
-                        <div class="text-left">
-                            <div class="text-sm text-gray-300">E-posta</div>
-                            <div class="font-medium">info@okyanusyapi.com</div>
                         </div>
                     </div>
                 </div>

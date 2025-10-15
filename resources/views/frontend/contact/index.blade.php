@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout :seoData="$seoData">
     {{-- Breadcrumb --}}
     <nav class="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -282,6 +282,12 @@
                             'X-Requested-With': 'XMLHttpRequest',
                         }
                     });
+
+                    // Handle rate limiting (429 status code)
+                    if (response.status === 429) {
+                        showMessage('error', 'Çok Fazla Deneme!', 'Çok sık mesaj gönderiyorsunuz. Lütfen 1 dakika bekleyip tekrar deneyin.');
+                        return;
+                    }
 
                     const data = await response.json();
 

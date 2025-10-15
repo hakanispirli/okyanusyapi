@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +13,11 @@ class PolicyController extends Controller
     public function privacyPolicy()
     {
         try {
-            return view('frontend.policies.privacy-policy');
+            // Generate SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo(null, 'privacy-policy');
+
+            return view('frontend.policies.privacy-policy', compact('seoData'));
         } catch (\Exception $e) {
             Log::error('An error occurred in privacyPolicy: ' . $e->getMessage(), [
                 'exception' => $e,
@@ -25,7 +30,11 @@ class PolicyController extends Controller
     public function cookiePolicy()
     {
         try {
-            return view('frontend.policies.cookie-policy');
+            // Generate SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo(null, 'cookie-policy');
+
+            return view('frontend.policies.cookie-policy', compact('seoData'));
         } catch (\Exception $e) {
             Log::error('An error occurred in cookiePolicy: ' . $e->getMessage(), [
                 'exception' => $e,
@@ -38,7 +47,11 @@ class PolicyController extends Controller
     public function termsConditions()
     {
         try {
-            return view('frontend.policies.terms-conditions');
+            // Generate SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo(null, 'terms-conditions');
+
+            return view('frontend.policies.terms-conditions', compact('seoData'));
         } catch (\Exception $e) {
             Log::error('An error occurred in termsConditions: ' . $e->getMessage(), [
                 'exception' => $e,

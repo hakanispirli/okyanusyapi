@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Frontend;
 
 use App\Models\Service;
+use App\Services\SeoService;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -21,19 +22,24 @@ class ServiceController extends Controller
         try {
             $services = Service::active()->orderBy('created_at', 'desc')->get();
 
-            return view('frontend.services.index', compact('services'));
+            // Generate SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo(null, 'services');
+
+            return view('frontend.services.index', compact('services', 'seoData'));
         } catch (\Exception $e) {
             Log::error('Error in ServiceController@index: ' . $e->getMessage(), [
                 'exception' => $e,
                 'user_id' => Auth::id() ?? null,
             ]);
 
+            // Fallback SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo(null, 'services');
+
             return view('frontend.services.index', [
                 'services' => collect(),
-                'seoData' => [
-                    'title' => 'Konut İnşaatı Hizmetleri - Okyanus Yapı',
-                    'description' => 'Profesyonel konut inşaatı hizmetleri ile hayalinizdeki evi gerçekleştirin.',
-                ],
+                'seoData' => $seoData,
             ]);
         }
     }
@@ -44,7 +50,11 @@ class ServiceController extends Controller
     public function show(Service $service)
     {
         try {
-            return view('frontend.services.show', compact('service'));
+            // Generate SEO data
+            $seoService = new SeoService();
+            $seoData = $seoService->generateSeo($service, 'service');
+
+            return view('frontend.services.show', compact('service', 'seoData'));
         } catch (\Exception $e) {
             Log::error('Error in ServiceController@show: ' . $e->getMessage(), [
                 'exception' => $e,
