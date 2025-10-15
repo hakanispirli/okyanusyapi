@@ -151,7 +151,7 @@ class SitemapService
             }
 
             $urls[] = [
-                'loc' => route('services.show', ['service' => $service->id]),
+                'loc' => route('services.show', $service),
                 'lastmod' => $service->updated_at,
                 'changefreq' => 'weekly',
                 'priority' => '0.9',
@@ -272,7 +272,7 @@ class SitemapService
             }
 
             $urls[] = [
-                'loc' => route('blogs.show', ['blog' => $blog->id]),
+                'loc' => route('blogs.show', $blog),
                 'lastmod' => $blog->updated_at,
                 'changefreq' => 'weekly',
                 'priority' => '0.8',
