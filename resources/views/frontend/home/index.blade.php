@@ -14,6 +14,8 @@
     <!-- Brands Section -->
     @include('frontend.home.sections.brands-section')
 
+    @include('frontend.home.sections.applications-section')
+
     <!-- Additional sections will be added here -->
     <!-- Example: Projects, About, Testimonials, etc. -->
 </x-app-layout>

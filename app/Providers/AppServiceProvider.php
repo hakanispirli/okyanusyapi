@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\SmtpSetting;
 use App\Models\SiteInformation;
 use App\Models\Service;
+use App\Models\Blog;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
@@ -68,6 +69,14 @@ class AppServiceProvider extends ServiceProvider
                     return Service::active()->orderBy('name')->get();
                 });
 
+                $globalApplications = Cache::remember('frontend_applications_global', 1800, function () {
+                    return Blog::published()
+                        ->with(['category', 'author'])
+                        ->latest('published_at')
+                        ->limit(6)
+                        ->get();
+                });
+
                 // Check if this is an admin view
                 $isAdminView = str_starts_with($view->getName(), 'admin.');
 
@@ -76,14 +85,17 @@ class AppServiceProvider extends ServiceProvider
                     // Don't share 'services' to avoid conflicts with admin controller variables
                     $view->with([
                         'siteInformation' => $siteInformation,
-                        'globalServices' => $globalServices
+                        'globalServices' => $globalServices,
+                        'globalApplications' => $globalApplications
                     ]);
                 } else {
-                    // For frontend views, share everything including services
+                    // For frontend views, share everything including services and applications
                     $view->with([
                         'siteInformation' => $siteInformation,
                         'services' => $globalServices,
-                        'globalServices' => $globalServices
+                        'globalServices' => $globalServices,
+                        'applications' => $globalApplications,
+                        'globalApplications' => $globalApplications
                     ]);
                 }
             });

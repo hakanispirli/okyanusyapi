@@ -33,11 +33,12 @@
                                 @endif
                                 <div class="relative h-full p-8 flex flex-col justify-end">
                                     <a href="{{ route('services.show', $service) }}" class="block group">
-                                        <h3 class="text-2xl font-display font-bold text-white mb-3 tracking-tight drop-shadow-lg group-hover:text-primary-200 transition-all duration-300 relative">
-                                            <span class="relative">
-                                                {{ $service->title ?? $service->name }}
-                                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-300 to-primary-500 group-hover:w-full transition-all duration-300 ease-out"></span>
-                                            </span>
+                                        <h3 class="text-2xl font-display font-bold text-white mb-3 tracking-tight transition-all duration-300 relative
+                                                   [text-shadow:_0_2px_8px_rgb(0_0_0_/_60%),_0_4px_16px_rgb(0_0_0_/_40%)]
+                                                   group-hover:[text-shadow:_0_2px_12px_rgb(0_0_0_/_70%),_0_4px_20px_rgb(0_0_0_/_50%),_0_0_30px_rgb(59_130_246_/_60%)]
+                                                   decoration-primary-400 decoration-2 underline underline-offset-4
+                                                   group-hover:decoration-4 group-hover:decoration-primary-300 group-hover:text-primary-100">
+                                            {{ $service->title ?? $service->name }}
                                         </h3>
                                     </a>
                                     <p class="text-white/90 text-sm font-light leading-relaxed mb-4 drop-shadow-md">
@@ -111,11 +112,12 @@
                             @endif
                             <div class="relative h-full {{ $padding }} flex flex-col justify-end">
                                 <a href="{{ route('services.show', $service) }}" class="block group">
-                                    <h3 class="{{ $titleSize }} font-display font-bold text-white {{ $isLargeCard ? 'mb-4' : ($isSmallCard ? 'mb-2' : 'mb-3') }} tracking-tight drop-shadow-lg group-hover:text-primary-200 transition-all duration-300 relative">
-                                        <span class="relative">
-                                            {{ $service->title ?? $service->name }}
-                                            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary-300 to-primary-500 group-hover:w-full transition-all duration-300 ease-out"></span>
-                                        </span>
+                                    <h3 class="{{ $titleSize }} font-display font-bold text-white {{ $isLargeCard ? 'mb-4' : ($isSmallCard ? 'mb-2' : 'mb-3') }} tracking-tight transition-all duration-300 relative
+                                               [text-shadow:_0_2px_8px_rgb(0_0_0_/_60%),_0_4px_16px_rgb(0_0_0_/_40%)]
+                                               group-hover:[text-shadow:_0_2px_12px_rgb(0_0_0_/_70%),_0_4px_20px_rgb(0_0_0_/_50%),_0_0_30px_rgb(59_130_246_/_60%)]
+                                               decoration-primary-400 {{ $isLargeCard ? 'decoration-4 underline-offset-8' : ($isSmallCard ? 'decoration-2 underline-offset-2' : 'decoration-2 underline-offset-4') }} underline
+                                               group-hover:{{ $isLargeCard ? 'decoration-[6px]' : 'decoration-4' }} group-hover:decoration-primary-300 group-hover:text-primary-100">
+                                        {{ $service->title ?? $service->name }}
                                     </h3>
                                 </a>
                                 <p class="text-white/90 {{ $descSize }} font-light {{ $isLargeCard ? 'leading-relaxed mb-6 max-w-lg' : ($isSmallCard ? 'mb-3' : 'leading-relaxed mb-4') }} drop-shadow-md">
