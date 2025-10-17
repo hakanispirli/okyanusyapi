@@ -235,9 +235,32 @@ class BlogController extends Controller
     public function tag(BlogTag $tag): View
     {
         try {
+            Log::info('=== TAG PAGE DEBUG START ===');
+            Log::info('Tag Model Info:', [
+                'id' => $tag->id,
+                'name' => $tag->name,
+                'slug' => $tag->slug,
+                'status' => $tag->status,
+                'usage_count' => $tag->usage_count,
+            ]);
+
             // Check if tag is active
             if (!$tag->status) {
+                Log::warning('Tag is not active, aborting', ['tag_id' => $tag->id]);
                 abort(404);
+            }
+
+            // First, let's see ALL published blogs and their tags
+            $allPublishedBlogs = Blog::published()->get();
+            Log::info('All Published Blogs Count: ' . $allPublishedBlogs->count());
+
+            foreach ($allPublishedBlogs as $blog) {
+                Log::info('Blog ID ' . $blog->id . ' tags:', [
+                    'title' => $blog->title,
+                    'tags_raw' => $blog->getRawOriginal('tags'),
+                    'tags_casted' => $blog->tags,
+                    'tags_type' => gettype($blog->tags),
+                ]);
             }
 
             // Search blogs by both tag slug and name for backward compatibility
@@ -256,6 +279,11 @@ class BlogController extends Controller
                 })
                 ->with(['category', 'author']);
 
+            // Log the SQL query
+            $sql = $query->toSql();
+            $bindings = $query->getBindings();
+            Log::info('SQL Query:', ['sql' => $sql, 'bindings' => $bindings]);
+
             // Search functionality
             if (request()->has('search') && request()->search) {
                 $searchTerm = request()->search;
@@ -269,7 +297,56 @@ class BlogController extends Controller
             // Order by published date
             $query->latest('published_at');
 
+            // Execute query and log results
             $blogs = $query->paginate(9);
+
+            Log::info('Query Results:', [
+                'total_found' => $blogs->total(),
+                'current_page' => $blogs->currentPage(),
+                'per_page' => $blogs->perPage(),
+            ]);
+
+            if ($blogs->count() > 0) {
+                Log::info('Found Blogs:');
+                foreach ($blogs as $blog) {
+                    Log::info('- Blog ID ' . $blog->id, [
+                        'title' => $blog->title,
+                        'tags' => $blog->tags,
+                    ]);
+                }
+            } else {
+                Log::warning('NO BLOGS FOUND!');
+                Log::info('Trying manual search...');
+
+                // Manual check - does ANY blog have this tag in ANY format?
+                $manualCheck = Blog::published()->get()->filter(function($blog) use ($tag) {
+                    if (!$blog->tags) return false;
+
+                    foreach ($blog->tags as $blogTag) {
+                        Log::info('Comparing:', [
+                            'blog_tag' => $blogTag,
+                            'search_slug' => $tag->slug,
+                            'search_name' => $tag->name,
+                            'matches_slug' => ($blogTag === $tag->slug),
+                            'matches_name' => ($blogTag === $tag->name),
+                        ]);
+
+                        if ($blogTag === $tag->slug || $blogTag === $tag->name) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+
+                Log::info('Manual Search Results: ' . $manualCheck->count() . ' blogs found');
+                if ($manualCheck->count() > 0) {
+                    foreach ($manualCheck as $blog) {
+                        Log::info('Manual found: ' . $blog->title, ['tags' => $blog->tags]);
+                    }
+                }
+            }
+
+            Log::info('=== TAG PAGE DEBUG END ===');
 
             // Get categories for sidebar
             $categories = BlogCategory::active()
