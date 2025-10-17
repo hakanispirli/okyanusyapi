@@ -112,7 +112,11 @@ class BlogTag extends Model
      */
     public function getBlogsUsingTag(): array
     {
-        return \App\Models\Blog::whereJsonContains('tags', $this->name)->get()->toArray();
+        return \App\Models\Blog::where(function ($query) {
+            $query->whereJsonContains('tags', $this->name)
+                  ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $this->name . '"'])
+                  ->orWhere('tags', 'like', '%"' . $this->name . '"%');
+        })->get()->toArray();
     }
 
     /**
@@ -120,6 +124,10 @@ class BlogTag extends Model
      */
     public function isInUse(): bool
     {
-        return \App\Models\Blog::whereJsonContains('tags', $this->name)->exists();
+        return \App\Models\Blog::where(function ($query) {
+            $query->whereJsonContains('tags', $this->name)
+                  ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $this->name . '"'])
+                  ->orWhere('tags', 'like', '%"' . $this->name . '"%');
+        })->exists();
     }
 }

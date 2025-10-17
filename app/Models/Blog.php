@@ -274,7 +274,11 @@ class Blog extends Model
             ->where('status', true)
             ->where(function ($query) {
                 foreach ($this->tags as $tag) {
-                    $query->orWhereJsonContains('tags', $tag);
+                    $query->orWhere(function ($q) use ($tag) {
+                        $q->whereJsonContains('tags', $tag)
+                          ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $tag . '"'])
+                          ->orWhere('tags', 'like', '%"' . $tag . '"%');
+                    });
                 }
             })
             ->limit($limit)

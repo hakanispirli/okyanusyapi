@@ -32,7 +32,11 @@ class BlogController extends Controller
 
             // Filter by tag if provided
             if ($request->has('tag') && $request->tag) {
-                $query->whereJsonContains('tags', $request->tag);
+                $query->where(function ($q) use ($request) {
+                    $q->whereJsonContains('tags', $request->tag)
+                      ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $request->tag . '"'])
+                      ->orWhere('tags', 'like', '%"' . $request->tag . '"%');
+                });
             }
 
             // Search functionality
@@ -129,7 +133,12 @@ class BlogController extends Controller
 
             // Filter by tag if provided
             if (request()->has('tag') && request()->tag) {
-                $query->whereJsonContains('tags', request()->tag);
+                $query->where(function ($q) {
+                    $tag = request()->tag;
+                    $q->whereJsonContains('tags', $tag)
+                      ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $tag . '"'])
+                      ->orWhere('tags', 'like', '%"' . $tag . '"%');
+                });
             }
 
             // Search functionality
@@ -211,8 +220,16 @@ class BlogController extends Controller
                 abort(404);
             }
 
+            // Try multiple query methods for better compatibility
             $query = Blog::published()
-                ->whereJsonContains('tags', $tag->name)
+                ->where(function ($q) use ($tag) {
+                    // Method 1: JSON contains
+                    $q->whereJsonContains('tags', $tag->name)
+                      // Method 2: Raw JSON search (for different database engines)
+                      ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $tag->name . '"'])
+                      // Method 3: LIKE search as fallback
+                      ->orWhere('tags', 'like', '%"' . $tag->name . '"%');
+                })
                 ->with(['category', 'author']);
 
             // Search functionality

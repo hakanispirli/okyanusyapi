@@ -96,9 +96,7 @@
 
                         <!-- Article Content -->
                         <div class="p-6">
-                            <div class="prose prose-lg max-w-none">
-                                {!! $blog->content !!}
-                            </div>
+                            @include('frontend.blogs.partials.content')
                         </div>
 
                         <!-- Tags -->
