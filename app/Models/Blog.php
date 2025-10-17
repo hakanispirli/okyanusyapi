@@ -276,7 +276,6 @@ class Blog extends Model
                 foreach ($this->tags as $tag) {
                     $query->orWhere(function ($q) use ($tag) {
                         $q->whereJsonContains('tags', $tag)
-                          ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $tag . '"'])
                           ->orWhere('tags', 'like', '%"' . $tag . '"%');
                     });
                 }

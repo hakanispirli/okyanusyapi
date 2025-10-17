@@ -32,27 +32,10 @@ class BlogController extends Controller
 
             // Filter by tag if provided
             if ($request->has('tag') && $request->tag) {
-                // Find tag by slug or name
-                $tagModel = \App\Models\BlogTag::where('slug', $request->tag)
-                    ->orWhere('name', $request->tag)
-                    ->first();
-
-                if ($tagModel) {
-                    $query->where(function ($q) use ($tagModel) {
-                        // Search by name
-                        $q->where(function ($subQ) use ($tagModel) {
-                            $subQ->whereJsonContains('tags', $tagModel->name)
-                                 ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $tagModel->name . '"'])
-                                 ->orWhere('tags', 'like', '%"' . $tagModel->name . '"%');
-                        })
-                        // Also search by slug
-                        ->orWhere(function ($subQ) use ($tagModel) {
-                            $subQ->whereJsonContains('tags', $tagModel->slug)
-                                 ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $tagModel->slug . '"'])
-                                 ->orWhere('tags', 'like', '%"' . $tagModel->slug . '"%');
-                        });
-                    });
-                }
+                $query->where(function ($q) use ($request) {
+                    $q->whereJsonContains('tags', $request->tag)
+                      ->orWhere('tags', 'like', '%"' . $request->tag . '"%');
+                });
             }
 
             // Search functionality
@@ -149,27 +132,11 @@ class BlogController extends Controller
 
             // Filter by tag if provided
             if (request()->has('tag') && request()->tag) {
-                // Find tag by slug or name
-                $tagModel = \App\Models\BlogTag::where('slug', request()->tag)
-                    ->orWhere('name', request()->tag)
-                    ->first();
-
-                if ($tagModel) {
-                    $query->where(function ($q) use ($tagModel) {
-                        // Search by name
-                        $q->where(function ($subQ) use ($tagModel) {
-                            $subQ->whereJsonContains('tags', $tagModel->name)
-                                 ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $tagModel->name . '"'])
-                                 ->orWhere('tags', 'like', '%"' . $tagModel->name . '"%');
-                        })
-                        // Also search by slug
-                        ->orWhere(function ($subQ) use ($tagModel) {
-                            $subQ->whereJsonContains('tags', $tagModel->slug)
-                                 ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $tagModel->slug . '"'])
-                                 ->orWhere('tags', 'like', '%"' . $tagModel->slug . '"%');
-                        });
-                    });
-                }
+                $query->where(function ($q) {
+                    $tag = request()->tag;
+                    $q->whereJsonContains('tags', $tag)
+                      ->orWhere('tags', 'like', '%"' . $tag . '"%');
+                });
             }
 
             // Search functionality
@@ -251,21 +218,11 @@ class BlogController extends Controller
                 abort(404);
             }
 
-            // Search by both tag name and slug for compatibility
+            // Search blogs by tag name
             $query = Blog::published()
                 ->where(function ($q) use ($tag) {
-                    // Search by tag name
-                    $q->where(function ($subQ) use ($tag) {
-                        $subQ->whereJsonContains('tags', $tag->name)
-                             ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $tag->name . '"'])
-                             ->orWhere('tags', 'like', '%"' . $tag->name . '"%');
-                    })
-                    // Also search by tag slug (for cases where slug is stored)
-                    ->orWhere(function ($subQ) use ($tag) {
-                        $subQ->whereJsonContains('tags', $tag->slug)
-                             ->orWhereRaw("JSON_CONTAINS(tags, ?)", ['"' . $tag->slug . '"'])
-                             ->orWhere('tags', 'like', '%"' . $tag->slug . '"%');
-                    });
+                    $q->whereJsonContains('tags', $tag->name)
+                      ->orWhere('tags', 'like', '%"' . $tag->name . '"%');
                 })
                 ->with(['category', 'author']);
 
