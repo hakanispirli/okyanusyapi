@@ -71,6 +71,15 @@ class BlogController extends Controller
                 ->limit(3)
                 ->get();
 
+            // Preload tag models for all blogs
+            $allTagNames = collect();
+            foreach ($blogs as $blog) {
+                if ($blog->tags) {
+                    $allTagNames = $allTagNames->merge($blog->tags);
+                }
+            }
+            $tagModels = BlogTag::whereIn('name', $allTagNames->unique())->get()->keyBy('name');
+
             // Generate SEO data
             $seoService = new SeoService();
             $seoData = $seoService->generateSeo(null, 'blogs');
@@ -80,6 +89,7 @@ class BlogController extends Controller
                 'categories',
                 'popularTags',
                 'featuredBlogs',
+                'tagModels',
                 'seoData'
             ));
         } catch (\Exception $e) {
@@ -96,6 +106,7 @@ class BlogController extends Controller
                 'categories' => collect(),
                 'popularTags' => collect(),
                 'featuredBlogs' => collect(),
+                'tagModels' => collect(),
                 'seoData' => $seoData,
             ]);
         }
@@ -157,6 +168,15 @@ class BlogController extends Controller
                 ->limit(3)
                 ->get();
 
+            // Preload tag models for all blogs
+            $allTagNames = collect();
+            foreach ($blogs as $blog) {
+                if ($blog->tags) {
+                    $allTagNames = $allTagNames->merge($blog->tags);
+                }
+            }
+            $tagModels = BlogTag::whereIn('name', $allTagNames->unique())->get()->keyBy('name');
+
             // Generate SEO data
             $seoService = new SeoService();
             $seoData = $seoService->generateSeo($category, 'blog-category');
@@ -167,6 +187,7 @@ class BlogController extends Controller
                 'categories',
                 'popularTags',
                 'featuredBlogs',
+                'tagModels',
                 'seoData'
             ));
         } catch (\Exception $e) {
@@ -230,6 +251,15 @@ class BlogController extends Controller
                 ->limit(3)
                 ->get();
 
+            // Preload tag models for all blogs
+            $allTagNames = collect();
+            foreach ($blogs as $blog) {
+                if ($blog->tags) {
+                    $allTagNames = $allTagNames->merge($blog->tags);
+                }
+            }
+            $tagModels = BlogTag::whereIn('name', $allTagNames->unique())->get()->keyBy('name');
+
             // Generate SEO data
             $seoService = new SeoService();
             $seoData = $seoService->generateSeo($tag, 'blog-tag');
@@ -240,6 +270,7 @@ class BlogController extends Controller
                 'categories',
                 'popularTags',
                 'featuredBlogs',
+                'tagModels',
                 'seoData'
             ));
         } catch (\Exception $e) {
@@ -294,6 +325,12 @@ class BlogController extends Controller
                 ->orderBy('name')
                 ->get();
 
+            // Preload tag models for current blog
+            $tagModels = collect();
+            if ($blog->tags) {
+                $tagModels = BlogTag::whereIn('name', $blog->tags)->get()->keyBy('name');
+            }
+
             // Generate SEO data
             $seoService = new SeoService();
             $seoData = $seoService->generateSeo($blog, 'blog');
@@ -304,6 +341,7 @@ class BlogController extends Controller
                 'recentBlogs',
                 'popularTags',
                 'categories',
+                'tagModels',
                 'seoData'
             ));
         } catch (\Exception $e) {

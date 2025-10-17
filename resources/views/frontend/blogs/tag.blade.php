@@ -30,7 +30,7 @@
                 <div class="flex items-center justify-center mb-4">
                     <x-lucide-tag class="w-8 h-8 text-orange-400 mr-3" />
                     <h1 class="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-white">
-                        #{{ $tag->name }}
+                        #{{ $tag->name }} Etiketi
                     </h1>
                 </div>
                 @if($tag->description)
@@ -109,10 +109,12 @@
                                             @if ($blog->tags && count($blog->tags) > 0)
                                                 <div class="flex flex-wrap gap-2 mb-4">
                                                     @foreach (array_slice($blog->tags, 0, 3) as $blogTag)
-                                                        <a href="{{ route('blogs.tag', ['tag' => $blogTag]) }}"
-                                                            class="text-xs bg-corporate-100 text-corporate-700 px-2 py-1 rounded hover:bg-primary-100 hover:text-primary-700 {{ $blogTag == $tag->name ? 'bg-primary-100 text-primary-700 font-medium' : '' }}">
-                                                            #{{ $blogTag }}
-                                                        </a>
+                                                        @if(isset($tagModels[$blogTag]))
+                                                            <a href="{{ route('blogs.tag', $tagModels[$blogTag]) }}"
+                                                                class="text-xs bg-corporate-100 text-corporate-700 px-2 py-1 rounded hover:bg-primary-100 hover:text-primary-700 {{ $blogTag == $tag->name ? 'bg-primary-100 text-primary-700 font-medium' : '' }}">
+                                                                #{{ $blogTag }}
+                                                            </a>
+                                                        @endif
                                                     @endforeach
                                                     @if (count($blog->tags) > 3)
                                                         <span class="text-xs text-corporate-500">+{{ count($blog->tags) - 3 }} daha</span>

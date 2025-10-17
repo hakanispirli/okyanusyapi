@@ -28,7 +28,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
                 <h1 class="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-white mb-3">
-                    {{ $category->name }}
+                    {{ $category->name }} Kategorisi
                 </h1>
                 @if($category->description)
                     <p class="text-gray-200 max-w-2xl mx-auto text-base">
@@ -104,10 +104,12 @@
                                             @if ($blog->tags && count($blog->tags) > 0)
                                                 <div class="flex flex-wrap gap-2 mb-4">
                                                     @foreach (array_slice($blog->tags, 0, 3) as $tag)
-                                                        <a href="{{ route('blogs.tag', ['tag' => $tag]) }}"
-                                                            class="text-xs bg-corporate-100 text-corporate-700 px-2 py-1 rounded hover:bg-primary-100 hover:text-primary-700">
-                                                            #{{ $tag }}
-                                                        </a>
+                                                        @if(isset($tagModels[$tag]))
+                                                            <a href="{{ route('blogs.tag', $tagModels[$tag]) }}"
+                                                                class="text-xs bg-corporate-100 text-corporate-700 px-2 py-1 rounded hover:bg-primary-100 hover:text-primary-700">
+                                                                #{{ $tag }}
+                                                            </a>
+                                                        @endif
                                                     @endforeach
                                                     @if (count($blog->tags) > 3)
                                                         <span class="text-xs text-corporate-500">+{{ count($blog->tags) - 3 }} daha</span>

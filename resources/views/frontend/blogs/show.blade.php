@@ -37,7 +37,7 @@
                     <span>{{ $blog->published_at->format('d.m.Y') }}</span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-white mb-3">
-                    {{ $blog->title }}
+                    {{ $blog->title }} Uygulaması
                 </h1>
                 @if($blog->excerpt)
                     <p class="text-gray-200 max-w-3xl mx-auto text-base leading-relaxed">
@@ -107,10 +107,12 @@
                                 <h4 class="text-sm font-medium text-gray-900 mb-3">Etiketler</h4>
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($blog->tags as $tag)
-                                        <a href="{{ route('blogs.tag', ['tag' => $tag]) }}"
-                                           class="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full hover:bg-primary-100 hover:text-primary-700 transition-colors">
-                                            #{{ $tag }}
-                                        </a>
+                                        @if(isset($tagModels[$tag]))
+                                            <a href="{{ route('blogs.tag', $tagModels[$tag]) }}"
+                                               class="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full hover:bg-primary-100 hover:text-primary-700 transition-colors">
+                                                #{{ $tag }}
+                                            </a>
+                                        @endif
                                     @endforeach
                                 </div>
                             </div>

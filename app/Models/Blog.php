@@ -292,4 +292,12 @@ class Blog extends Model
 
         return \App\Models\BlogTag::whereIn('name', $this->tags)->get();
     }
+
+    /**
+     * Get tag model by name.
+     */
+    public function getTagModelByName(string $tagName): ?\App\Models\BlogTag
+    {
+        return \App\Models\BlogTag::where('name', $tagName)->first();
+    }
 }
