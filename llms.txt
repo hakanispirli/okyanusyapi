@@ -1,0 +1,330 @@
+# OkyanusYapı - Laravel CMS Projesi
+
+## Proje Genel Bakış
+
+OkyanusYapı, Türkiye'de faaliyet gösteren bir inşaat ve yapı malzemeleri şirketi için geliştirilmiş modern bir Laravel CMS (Content Management System) projesidir. Proje, şirketin web varlığını yönetmek ve müşterilerine hizmetlerini sunmak amacıyla tasarlanmıştır.
+
+## Teknik Stack
+
+- **Backend Framework**: Laravel 12+
+- **Frontend**: Alpine.js + Tailwind CSS
+- **Database**: SQLite (geliştirme), MySQL/PostgreSQL (production)
+- **PHP Version**: PHP 8.3+
+- **Asset Management**: Vite
+- **Icons**: Lucide Icons
+- **Styling**: Tailwind CSS (Mobile-first, minimal design)
+
+## Proje Yapısı
+
+### Ana Dizinler
+```
+app/
+├── Console/Commands/          # Artisan komutları
+├── Http/
+│   ├── Controllers/           # Controller sınıfları
+│   │   ├── Admin/            # Admin paneli controller'ları
+│   │   └── Frontend/         # Frontend controller'ları
+│   ├── Middleware/           # Middleware sınıfları
+│   └── Requests/             # Form validation request sınıfları
+├── Mail/                     # E-posta sınıfları
+├── Models/                   # Eloquent model sınıfları
+├── Providers/                # Service provider sınıfları
+├── Services/                 # İş mantığı servis sınıfları
+└── View/Components/          # Blade component sınıfları
+
+resources/
+├── css/                      # CSS dosyaları
+├── js/                       # JavaScript dosyaları
+├── icons/lucide/            # Lucide icon dosyaları
+└── views/                   # Blade template dosyaları
+    ├── admin/               # Admin paneli view'ları
+    ├── frontend/            # Frontend view'ları
+    ├── components/          # Blade component'ları
+    ├── layouts/             # Layout template'leri
+    └── errors/              # Hata sayfası template'leri
+
+routes/
+├── web.php                  # Frontend route'ları
+├── admin.php                # Admin paneli route'ları
+├── auth.php                 # Authentication route'ları
+└── console.php              # Artisan komut route'ları
+```
+
+## Veritabanı Modelleri
+
+### 1. User Model
+- **Dosya**: `app/Models/User.php`
+- **Açıklama**: Kullanıcı yönetimi için temel model
+- **Özellikler**:
+  - `name`: Kullanıcı adı
+  - `email`: E-posta adresi
+  - `password`: Şifre (hash'lenmiş)
+  - `is_admin`: Admin yetkisi kontrolü
+- **İlişkiler**: Blog yazıları ile one-to-many ilişki
+
+### 2. SiteInformation Model
+- **Dosya**: `app/Models/SiteInformation.php`
+- **Açıklama**: Site genel bilgilerini yöneten model
+- **Özellikler**:
+  - `name`: Site adı
+  - `phone`: Telefon numarası
+  - `email`: E-posta adresi
+  - `address`: Adres bilgisi
+  - `header_logo`: Header logo dosyası
+  - `footer_logo`: Footer logo dosyası
+  - `favicon`: Favicon dosyası
+  - `facebook`, `instagram`, `twitter`, `whatsapp`: Sosyal medya linkleri
+  - `notification_email`: Bildirim e-posta adresi
+
+### 3. Service Model
+- **Dosya**: `app/Models/Service.php`
+- **Açıklama**: Hizmet yönetimi için model
+- **Özellikler**:
+  - `name`: Hizmet adı
+  - `slug`: URL slug'ı
+  - `title`: Hizmet başlığı
+  - `description`: Hizmet açıklaması
+  - `hero_image`: Ana görsel
+  - `process_title`: Süreç başlığı
+  - `process_description`: Süreç açıklaması
+  - `process_steps`: Süreç adımları (JSON array)
+  - `gallery_title`: Galeri başlığı
+  - `gallery_description`: Galeri açıklaması
+  - `gallery_images`: Galeri görselleri (JSON array)
+  - `seo_content`: SEO içeriği
+  - `status`: Aktif/pasif durumu
+
+### 4. Blog Model
+- **Dosya**: `app/Models/Blog.php`
+- **Açıklama**: Blog yazı yönetimi için model
+- **Özellikler**:
+  - `title`: Blog başlığı
+  - `slug`: URL slug'ı
+  - `excerpt`: Özet
+  - `content`: İçerik
+  - `category_id`: Kategori ID'si
+  - `author_id`: Yazar ID'si
+  - `featured_image`: Öne çıkan görsel
+  - `featured_image_alt`: Görsel alt metni
+  - `gallery_images`: Galeri görselleri (JSON array)
+  - `meta_title`, `meta_description`, `meta_keywords`: SEO meta verileri
+  - `meta_og`: Open Graph verileri (JSON array)
+  - `reading_time`: Okuma süresi (dakika)
+  - `views`: Görüntülenme sayısı
+  - `likes`: Beğeni sayısı
+  - `status`: Yayın durumu
+  - `featured`: Öne çıkan yazı
+  - `published_at`: Yayın tarihi
+  - `tags`: Etiketler (JSON array)
+
+### 5. BlogCategory Model
+- **Dosya**: `app/Models/BlogCategory.php`
+- **Açıklama**: Blog kategori yönetimi
+- **İlişkiler**: Blog modeli ile one-to-many ilişki
+
+### 6. BlogTag Model
+- **Dosya**: `app/Models/BlogTag.php`
+- **Açıklama**: Blog etiket yönetimi
+
+### 7. Brand Model
+- **Dosya**: `app/Models/Brand.php`
+- **Açıklama**: Marka yönetimi
+- **Özellikler**:
+  - `name`: Bölüm başlığı
+  - `description`: Bölüm açıklaması
+  - `brands_images`: Marka görselleri (JSON array)
+  - `status`: Aktif/pasif durumu
+
+### 8. SmtpSetting Model
+- **Dosya**: `app/Models/SmtpSetting.php`
+- **Açıklama**: E-posta SMTP ayarları yönetimi
+
+## Route Yapısı
+
+### Frontend Routes (`routes/web.php`)
+- `GET /` → Ana sayfa (HomeController@index)
+- `GET /hakkimizda` → Hakkımızda sayfası (AboutController@index)
+- `GET /hizmetlerimiz` → Hizmetler listesi (ServiceController@index)
+- `GET /hizmetlerimiz/{service}` → Hizmet detayı (ServiceController@show)
+- `GET /uygulamalar` → Blog listesi (BlogController@index)
+- `GET /uygulamalar/kategori/{category}` → Kategoriye göre blog listesi
+- `GET /uygulamalar/etiket/{tag}` → Etikete göre blog listesi
+- `GET /uygulamalar/{blog}` → Blog detayı (BlogController@show)
+- `GET /iletisim` → İletişim sayfası (ContactController@index)
+- `POST /iletisim` → İletişim formu gönderimi (ContactController@store)
+- `GET /gizlilik-politikasi` → Gizlilik politikası
+- `GET /cerez-politikasi` → Çerez politikası
+- `GET /kullanim-sartlari` → Kullanım şartları
+
+### Admin Routes (`routes/admin.php`)
+- `GET /admin/dashboard` → Admin paneli ana sayfa
+- `GET /admin/profile` → Profil düzenleme
+- `PATCH /admin/profile` → Profil güncelleme
+- `DELETE /admin/profile` → Profil silme
+- `Resource /admin/site-information` → Site bilgileri yönetimi
+- `Resource /admin/services` → Hizmet yönetimi
+- `Resource /admin/blog-categories` → Blog kategori yönetimi
+- `Resource /admin/blogs` → Blog yönetimi
+- `Resource /admin/brands` → Marka yönetimi
+- `Resource /admin/smtp` → SMTP ayarları yönetimi
+- `POST /admin/smtp/{smtp}/activate` → SMTP ayarını aktifleştirme
+- `POST /admin/smtp/{smtp}/test` → SMTP ayarını test etme
+
+## Önemli Servisler
+
+### 1. SeoService
+- **Dosya**: `app/Services/SeoService.php`
+- **Açıklama**: SEO meta verilerini yöneten servis
+
+### 2. SitemapService
+- **Dosya**: `app/Services/SitemapService.php`
+- **Açıklama**: XML sitemap oluşturma servisi
+
+### 3. AppServiceProvider
+- **Dosya**: `app/Providers/AppServiceProvider.php`
+- **Açıklama**: Uygulama genelinde veri paylaşımı ve SMTP ayarları yönetimi
+- **Özellikler**:
+  - SMTP ayarlarını veritabanından yükleme
+  - View'lara global veri paylaşımı (site bilgileri, hizmetler)
+  - Admin ve frontend view'ları için farklı veri paylaşımı
+
+## Frontend Özellikleri
+
+### Ana Sayfa Bölümleri
+- Hero Section: Ana banner ve tanıtım
+- Services Section: Hizmetler listesi
+- Features Section: Özellikler
+- Marquee Section: Kaydırmalı içerik
+- Brands Section: Marka logoları
+
+### Tasarım Prensipleri
+- **Renk Paleti**: Siyah, beyaz ve turuncu tonları (lüks limuzin transfer teması)
+- **Responsive Design**: Mobile-first yaklaşım
+- **Minimal Tasarım**: Sade ve şık görünüm
+- **Icon Kullanımı**: Lucide Icons kütüphanesi
+- **Font**: Inter font ailesi (Türkçe karakter desteği ile)
+
+## Admin Panel Özellikleri
+
+### Yönetim Modülleri
+1. **Dashboard**: Genel istatistikler ve özet bilgiler
+2. **Site Bilgileri**: Genel site ayarları
+3. **Hizmet Yönetimi**: Hizmet ekleme, düzenleme, silme
+4. **Blog Yönetimi**: Blog yazıları, kategoriler, etiketler
+5. **Marka Yönetimi**: Marka logoları ve bilgileri
+6. **SMTP Ayarları**: E-posta gönderim ayarları
+7. **Profil Yönetimi**: Admin kullanıcı profili
+
+### Güvenlik Özellikleri
+- Admin yetkisi kontrolü (`is_admin` middleware)
+- CSRF koruması
+- Form validation
+- Rate limiting (iletişim formu için)
+
+## Veritabanı Migrasyonları
+
+### Önemli Tablolar
+- `users`: Kullanıcı bilgileri
+- `site_information`: Site genel bilgileri
+- `services`: Hizmet bilgileri
+- `blogs`: Blog yazıları
+- `blog_categories`: Blog kategorileri
+- `blog_tags`: Blog etiketleri
+- `brands`: Marka bilgileri
+- `smtp_settings`: SMTP ayarları
+
+## Önemli Konfigürasyonlar
+
+### App Config (`config/app.php`)
+- **Uygulama Adı**: OkyanusYapı
+- **URL**: https://okyanusyapi.com
+- **Timezone**: Europe/Istanbul
+- **Locale**: tr (Türkçe)
+- **Debug**: Production'da false
+
+### Mail Config
+- SMTP ayarları veritabanından dinamik olarak yüklenir
+- AppServiceProvider'da konfigüre edilir
+
+## Geliştirme Standartları
+
+### PHP Standartları
+- PHP 8.3+ özellikleri kullanılır
+- PSR-12 kodlama standartları
+- Strict typing: `declare(strict_types=1);`
+- SOLID prensipleri
+- Dependency injection
+
+### Laravel Best Practices
+- Eloquent ORM kullanımı
+- Repository pattern (gerekli yerlerde)
+- Form Request validation
+- Service layer pattern
+- Proper error handling ve logging
+
+### Frontend Standartları
+- Alpine.js ile minimal JavaScript
+- Tailwind CSS utility-first yaklaşım
+- Mobile-first responsive design
+- Lucide Icons kullanımı
+- Component-based yapı
+
+## Hata Yönetimi
+
+### Error Handling
+- Tüm controller'larda try-catch blokları
+- Laravel'in built-in exception handling
+- Custom exception sınıfları (gerekli yerlerde)
+- Comprehensive logging
+
+### Error Pages
+- 401, 403, 404, 419, 429, 500, 503 hata sayfaları
+- Custom error layout
+- Kullanıcı dostu hata mesajları
+
+## Cache Yapısı
+
+### Cache Kullanımı
+- Site bilgileri: 1 saat (3600 saniye)
+- Hizmetler: 30 dakika (1800 saniye)
+- View composer'da cache implementasyonu
+
+## SEO Özellikleri
+
+### SEO Yönetimi
+- Dinamik meta tag yönetimi
+- XML sitemap oluşturma
+- Open Graph meta verileri
+- Structured data desteği
+- URL slug yapısı
+
+## Güvenlik Önlemleri
+
+### Güvenlik Implementasyonu
+- CSRF token koruması
+- SQL injection koruması (Eloquent ORM)
+- XSS koruması (Blade templating)
+- Rate limiting
+- Admin yetki kontrolü
+- Secure password hashing
+
+## Performans Optimizasyonu
+
+### Performans Özellikleri
+- Database query optimization
+- Eager loading
+- Cache implementasyonu
+- Asset minification (Vite)
+- Image optimization
+- Lazy loading
+
+## Deployment
+
+### Production Hazırlığı
+- Environment configuration
+- Database migration
+- Asset compilation
+- Cache optimization
+- Error logging configuration
+
+Bu proje, modern web geliştirme standartlarına uygun olarak geliştirilmiş, ölçeklenebilir ve maintainable bir Laravel CMS uygulamasıdır.
