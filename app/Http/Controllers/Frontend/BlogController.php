@@ -264,17 +264,18 @@ class BlogController extends Controller
             }
 
             // Search blogs by both tag slug and name for backward compatibility
+            // Use case-insensitive COLLATE for Turkish character support
             $query = Blog::published()
                 ->where(function ($q) use ($tag) {
                     // Search by slug (new format)
                     $q->where(function ($subQ) use ($tag) {
-                        $subQ->whereJsonContains('tags', $tag->slug)
-                             ->orWhere('tags', 'like', '%"' . $tag->slug . '"%');
+                        $subQ->whereRaw("LOWER(CAST(tags AS CHAR)) COLLATE utf8mb4_unicode_ci LIKE LOWER(?)", ['%"' . $tag->slug . '"%'])
+                             ->orWhereRaw("LOWER(CAST(tags AS CHAR)) COLLATE utf8mb4_unicode_ci LIKE LOWER(?)", ['%"' . str_replace('-', ' ', $tag->slug) . '"%']);
                     })
                     // Also search by name (old format for existing records)
                     ->orWhere(function ($subQ) use ($tag) {
-                        $subQ->whereJsonContains('tags', $tag->name)
-                             ->orWhere('tags', 'like', '%"' . $tag->name . '"%');
+                        $subQ->whereRaw("LOWER(CAST(tags AS CHAR)) COLLATE utf8mb4_unicode_ci LIKE LOWER(?)", ['%"' . $tag->name . '"%'])
+                             ->orWhereRaw("LOWER(CAST(tags AS CHAR)) COLLATE utf8mb4_unicode_ci LIKE LOWER(?)", ['%"' . mb_strtolower($tag->name, 'UTF-8') . '"%']);
                     });
                 })
                 ->with(['category', 'author']);
