@@ -74,14 +74,25 @@ class BlogController extends Controller
                 ->limit(3)
                 ->get();
 
-            // Preload tag models for all blogs
+            // Preload tag models for all blogs (support both slug and name)
             $allTagNames = collect();
             foreach ($blogs as $blog) {
                 if ($blog->tags) {
                     $allTagNames = $allTagNames->merge($blog->tags);
                 }
             }
-            $tagModels = BlogTag::whereIn('slug', $allTagNames->unique())->get()->keyBy('slug');
+            // Get tags by both slug and name, then create a combined lookup
+            $uniqueTags = $allTagNames->unique();
+            $tagsBySlug = BlogTag::whereIn('slug', $uniqueTags)->get();
+            $tagsByName = BlogTag::whereIn('name', $uniqueTags)->get();
+            $allTags = $tagsBySlug->merge($tagsByName)->unique('id');
+
+            // Create lookup by both slug and name
+            $tagModels = collect();
+            foreach ($allTags as $tag) {
+                $tagModels[$tag->slug] = $tag;
+                $tagModels[$tag->name] = $tag;
+            }
 
             // Generate SEO data
             $seoService = new SeoService();
@@ -175,14 +186,25 @@ class BlogController extends Controller
                 ->limit(3)
                 ->get();
 
-            // Preload tag models for all blogs
+            // Preload tag models for all blogs (support both slug and name)
             $allTagNames = collect();
             foreach ($blogs as $blog) {
                 if ($blog->tags) {
                     $allTagNames = $allTagNames->merge($blog->tags);
                 }
             }
-            $tagModels = BlogTag::whereIn('slug', $allTagNames->unique())->get()->keyBy('slug');
+            // Get tags by both slug and name, then create a combined lookup
+            $uniqueTags = $allTagNames->unique();
+            $tagsBySlug = BlogTag::whereIn('slug', $uniqueTags)->get();
+            $tagsByName = BlogTag::whereIn('name', $uniqueTags)->get();
+            $allTags = $tagsBySlug->merge($tagsByName)->unique('id');
+
+            // Create lookup by both slug and name
+            $tagModels = collect();
+            foreach ($allTags as $tag) {
+                $tagModels[$tag->slug] = $tag;
+                $tagModels[$tag->name] = $tag;
+            }
 
             // Generate SEO data
             $seoService = new SeoService();
@@ -218,11 +240,19 @@ class BlogController extends Controller
                 abort(404);
             }
 
-            // Search blogs by tag slug
+            // Search blogs by both tag slug and name for backward compatibility
             $query = Blog::published()
                 ->where(function ($q) use ($tag) {
-                    $q->whereJsonContains('tags', $tag->slug)
-                      ->orWhere('tags', 'like', '%"' . $tag->slug . '"%');
+                    // Search by slug (new format)
+                    $q->where(function ($subQ) use ($tag) {
+                        $subQ->whereJsonContains('tags', $tag->slug)
+                             ->orWhere('tags', 'like', '%"' . $tag->slug . '"%');
+                    })
+                    // Also search by name (old format for existing records)
+                    ->orWhere(function ($subQ) use ($tag) {
+                        $subQ->whereJsonContains('tags', $tag->name)
+                             ->orWhere('tags', 'like', '%"' . $tag->name . '"%');
+                    });
                 })
                 ->with(['category', 'author']);
 
@@ -262,14 +292,25 @@ class BlogController extends Controller
                 ->limit(3)
                 ->get();
 
-            // Preload tag models for all blogs
+            // Preload tag models for all blogs (support both slug and name)
             $allTagNames = collect();
             foreach ($blogs as $blog) {
                 if ($blog->tags) {
                     $allTagNames = $allTagNames->merge($blog->tags);
                 }
             }
-            $tagModels = BlogTag::whereIn('slug', $allTagNames->unique())->get()->keyBy('slug');
+            // Get tags by both slug and name, then create a combined lookup
+            $uniqueTags = $allTagNames->unique();
+            $tagsBySlug = BlogTag::whereIn('slug', $uniqueTags)->get();
+            $tagsByName = BlogTag::whereIn('name', $uniqueTags)->get();
+            $allTags = $tagsBySlug->merge($tagsByName)->unique('id');
+
+            // Create lookup by both slug and name
+            $tagModels = collect();
+            foreach ($allTags as $tag) {
+                $tagModels[$tag->slug] = $tag;
+                $tagModels[$tag->name] = $tag;
+            }
 
             // Generate SEO data
             $seoService = new SeoService();
@@ -336,10 +377,18 @@ class BlogController extends Controller
                 ->orderBy('name')
                 ->get();
 
-            // Preload tag models for current blog
+            // Preload tag models for current blog (support both slug and name)
             $tagModels = collect();
             if ($blog->tags) {
-                $tagModels = BlogTag::whereIn('slug', $blog->tags)->get()->keyBy('slug');
+                $tagsBySlug = BlogTag::whereIn('slug', $blog->tags)->get();
+                $tagsByName = BlogTag::whereIn('name', $blog->tags)->get();
+                $allTags = $tagsBySlug->merge($tagsByName)->unique('id');
+
+                // Create lookup by both slug and name
+                foreach ($allTags as $tag) {
+                    $tagModels[$tag->slug] = $tag;
+                    $tagModels[$tag->name] = $tag;
+                }
             }
 
             // Generate SEO data
