@@ -81,7 +81,7 @@ class BlogController extends Controller
                     $allTagNames = $allTagNames->merge($blog->tags);
                 }
             }
-            $tagModels = BlogTag::whereIn('name', $allTagNames->unique())->get()->keyBy('name');
+            $tagModels = BlogTag::whereIn('slug', $allTagNames->unique())->get()->keyBy('slug');
 
             // Generate SEO data
             $seoService = new SeoService();
@@ -182,7 +182,7 @@ class BlogController extends Controller
                     $allTagNames = $allTagNames->merge($blog->tags);
                 }
             }
-            $tagModels = BlogTag::whereIn('name', $allTagNames->unique())->get()->keyBy('name');
+            $tagModels = BlogTag::whereIn('slug', $allTagNames->unique())->get()->keyBy('slug');
 
             // Generate SEO data
             $seoService = new SeoService();
@@ -218,11 +218,11 @@ class BlogController extends Controller
                 abort(404);
             }
 
-            // Search blogs by tag name
+            // Search blogs by tag slug
             $query = Blog::published()
                 ->where(function ($q) use ($tag) {
-                    $q->whereJsonContains('tags', $tag->name)
-                      ->orWhere('tags', 'like', '%"' . $tag->name . '"%');
+                    $q->whereJsonContains('tags', $tag->slug)
+                      ->orWhere('tags', 'like', '%"' . $tag->slug . '"%');
                 })
                 ->with(['category', 'author']);
 
@@ -269,7 +269,7 @@ class BlogController extends Controller
                     $allTagNames = $allTagNames->merge($blog->tags);
                 }
             }
-            $tagModels = BlogTag::whereIn('name', $allTagNames->unique())->get()->keyBy('name');
+            $tagModels = BlogTag::whereIn('slug', $allTagNames->unique())->get()->keyBy('slug');
 
             // Generate SEO data
             $seoService = new SeoService();
@@ -339,7 +339,7 @@ class BlogController extends Controller
             // Preload tag models for current blog
             $tagModels = collect();
             if ($blog->tags) {
-                $tagModels = BlogTag::whereIn('name', $blog->tags)->get()->keyBy('name');
+                $tagModels = BlogTag::whereIn('slug', $blog->tags)->get()->keyBy('slug');
             }
 
             // Generate SEO data

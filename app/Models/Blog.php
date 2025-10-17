@@ -293,14 +293,14 @@ class Blog extends Model
             return collect();
         }
 
-        return \App\Models\BlogTag::whereIn('name', $this->tags)->get();
+        return \App\Models\BlogTag::whereIn('slug', $this->tags)->get();
     }
 
     /**
-     * Get tag model by name.
+     * Get tag model by slug.
      */
-    public function getTagModelByName(string $tagName): ?\App\Models\BlogTag
+    public function getTagModelBySlug(string $tagSlug): ?\App\Models\BlogTag
     {
-        return \App\Models\BlogTag::where('name', $tagName)->first();
+        return \App\Models\BlogTag::where('slug', $tagSlug)->first();
     }
 }

@@ -108,11 +108,11 @@
                                             <!-- Tags -->
                                             @if ($blog->tags && count($blog->tags) > 0)
                                                 <div class="flex flex-wrap gap-2 mb-4">
-                                                    @foreach (array_slice($blog->tags, 0, 3) as $blogTag)
-                                                        @if(isset($tagModels[$blogTag]))
-                                                            <a href="{{ route('blogs.tag', $tagModels[$blogTag]) }}"
-                                                                class="text-xs bg-corporate-100 text-corporate-700 px-2 py-1 rounded hover:bg-primary-100 hover:text-primary-700 {{ $blogTag == $tag->name ? 'bg-primary-100 text-primary-700 font-medium' : '' }}">
-                                                                #{{ $blogTag }}
+                                                    @foreach (array_slice($blog->tags, 0, 3) as $blogTagSlug)
+                                                        @if(isset($tagModels[$blogTagSlug]))
+                                                            <a href="{{ route('blogs.tag', $tagModels[$blogTagSlug]) }}"
+                                                                class="text-xs bg-corporate-100 text-corporate-700 px-2 py-1 rounded hover:bg-primary-100 hover:text-primary-700 {{ $blogTagSlug == $tag->slug ? 'bg-primary-100 text-primary-700 font-medium' : '' }}">
+                                                                #{{ $tagModels[$blogTagSlug]->name }}
                                                             </a>
                                                         @endif
                                                     @endforeach

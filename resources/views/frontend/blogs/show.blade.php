@@ -104,11 +104,11 @@
                             <div class="px-6 py-4 border-t border-gray-200">
                                 <h4 class="text-sm font-medium text-gray-900 mb-3">Etiketler</h4>
                                 <div class="flex flex-wrap gap-2">
-                                    @foreach($blog->tags as $tag)
-                                        @if(isset($tagModels[$tag]))
-                                            <a href="{{ route('blogs.tag', $tagModels[$tag]) }}"
+                                    @foreach($blog->tags as $tagSlug)
+                                        @if(isset($tagModels[$tagSlug]))
+                                            <a href="{{ route('blogs.tag', $tagModels[$tagSlug]) }}"
                                                class="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full hover:bg-primary-100 hover:text-primary-700 transition-colors">
-                                                #{{ $tag }}
+                                                #{{ $tagModels[$tagSlug]->name }}
                                             </a>
                                         @endif
                                     @endforeach

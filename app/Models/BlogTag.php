@@ -31,19 +31,7 @@ class BlogTag extends Model
      */
     public function getRouteKeyName(): string
     {
-        return 'name';
-    }
-
-    /**
-     * Retrieve the model for a bound value.
-     */
-    public function resolveRouteBinding($value, $field = null)
-    {
-        // Try to find by slug first, then by name
-        return $this->where('slug', $value)
-            ->orWhere('name', $value)
-            ->where('status', true)
-            ->firstOrFail();
+        return 'slug';
     }
 
     /**
@@ -125,8 +113,8 @@ class BlogTag extends Model
     public function getBlogsUsingTag(): array
     {
         return \App\Models\Blog::where(function ($query) {
-            $query->whereJsonContains('tags', $this->name)
-                  ->orWhere('tags', 'like', '%"' . $this->name . '"%');
+            $query->whereJsonContains('tags', $this->slug)
+                  ->orWhere('tags', 'like', '%"' . $this->slug . '"%');
         })->get()->toArray();
     }
 
@@ -136,8 +124,8 @@ class BlogTag extends Model
     public function isInUse(): bool
     {
         return \App\Models\Blog::where(function ($query) {
-            $query->whereJsonContains('tags', $this->name)
-                  ->orWhere('tags', 'like', '%"' . $this->name . '"%');
+            $query->whereJsonContains('tags', $this->slug)
+                  ->orWhere('tags', 'like', '%"' . $this->slug . '"%');
         })->exists();
     }
 }

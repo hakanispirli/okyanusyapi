@@ -319,7 +319,8 @@ class BlogController extends Controller
 
             // Increment usage count
             $tag->incrementUsage();
-            $processedTags[] = $tagName;
+            // Store slug instead of name for URL compatibility
+            $processedTags[] = $tag->slug;
         }
 
         // If updating, decrement usage count for removed tags
@@ -327,8 +328,8 @@ class BlogController extends Controller
             $oldTags = is_array($blog->tags) ? $blog->tags : [];
             $removedTags = array_diff($oldTags, $processedTags);
 
-            foreach ($removedTags as $removedTagName) {
-                $tag = BlogTag::where('name', $removedTagName)->first();
+            foreach ($removedTags as $removedTagSlug) {
+                $tag = BlogTag::where('slug', $removedTagSlug)->first();
                 if ($tag) {
                     $tag->decrementUsage();
                 }
@@ -344,10 +345,10 @@ class BlogController extends Controller
     private function handleTagsCleanup(Blog $blog): void
     {
         if ($blog->tags) {
-            $tagNames = is_array($blog->tags) ? $blog->tags : [];
+            $tagSlugs = is_array($blog->tags) ? $blog->tags : [];
 
-            foreach ($tagNames as $tagName) {
-                $tag = BlogTag::where('name', $tagName)->first();
+            foreach ($tagSlugs as $tagSlug) {
+                $tag = BlogTag::where('slug', $tagSlug)->first();
                 if ($tag) {
                     $tag->decrementUsage();
                 }
