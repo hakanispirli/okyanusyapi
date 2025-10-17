@@ -108,24 +108,52 @@ class BlogTag extends Model
     }
 
     /**
-     * Get blogs that use this tag.
+     * Get blogs that use this tag (case-insensitive for Turkish characters).
      */
     public function getBlogsUsingTag(): array
     {
-        return \App\Models\Blog::where(function ($query) {
-            $query->whereJsonContains('tags', $this->slug)
-                  ->orWhere('tags', 'like', '%"' . $this->slug . '"%');
-        })->get()->toArray();
+        $normalizedName = mb_strtolower(trim($this->name), 'UTF-8');
+        $normalizedSlug = mb_strtolower(trim($this->slug), 'UTF-8');
+
+        return \App\Models\Blog::all()->filter(function($blog) use ($normalizedName, $normalizedSlug) {
+            if (!$blog->tags || !is_array($blog->tags)) {
+                return false;
+            }
+
+            foreach ($blog->tags as $blogTag) {
+                $normalizedBlogTag = mb_strtolower(trim($blogTag), 'UTF-8');
+                if ($normalizedBlogTag === $normalizedName ||
+                    $normalizedBlogTag === $normalizedSlug ||
+                    $normalizedBlogTag === str_replace('-', ' ', $normalizedSlug)) {
+                    return true;
+                }
+            }
+            return false;
+        })->toArray();
     }
 
     /**
-     * Check if tag is being used by any blog.
+     * Check if tag is being used by any blog (case-insensitive for Turkish characters).
      */
     public function isInUse(): bool
     {
-        return \App\Models\Blog::where(function ($query) {
-            $query->whereJsonContains('tags', $this->slug)
-                  ->orWhere('tags', 'like', '%"' . $this->slug . '"%');
-        })->exists();
+        $normalizedName = mb_strtolower(trim($this->name), 'UTF-8');
+        $normalizedSlug = mb_strtolower(trim($this->slug), 'UTF-8');
+
+        return \App\Models\Blog::all()->contains(function($blog) use ($normalizedName, $normalizedSlug) {
+            if (!$blog->tags || !is_array($blog->tags)) {
+                return false;
+            }
+
+            foreach ($blog->tags as $blogTag) {
+                $normalizedBlogTag = mb_strtolower(trim($blogTag), 'UTF-8');
+                if ($normalizedBlogTag === $normalizedName ||
+                    $normalizedBlogTag === $normalizedSlug ||
+                    $normalizedBlogTag === str_replace('-', ' ', $normalizedSlug)) {
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 }

@@ -235,119 +235,68 @@ class BlogController extends Controller
     public function tag(BlogTag $tag): View
     {
         try {
-            Log::info('=== TAG PAGE DEBUG START ===');
-            Log::info('Tag Model Info:', [
-                'id' => $tag->id,
-                'name' => $tag->name,
-                'slug' => $tag->slug,
-                'status' => $tag->status,
-                'usage_count' => $tag->usage_count,
-            ]);
-
             // Check if tag is active
             if (!$tag->status) {
-                Log::warning('Tag is not active, aborting', ['tag_id' => $tag->id]);
                 abort(404);
             }
 
-            // First, let's see ALL published blogs and their tags
-            $allPublishedBlogs = Blog::published()->get();
-            Log::info('All Published Blogs Count: ' . $allPublishedBlogs->count());
+            // Use PHP collection filter for case-insensitive Turkish character support
+            // This is more reliable than SQL collation for Turkish characters
+            $allBlogs = Blog::published()->with(['category', 'author'])->get();
 
-            foreach ($allPublishedBlogs as $blog) {
-                Log::info('Blog ID ' . $blog->id . ' tags:', [
-                    'title' => $blog->title,
-                    'tags_raw' => $blog->getRawOriginal('tags'),
-                    'tags_casted' => $blog->tags,
-                    'tags_type' => gettype($blog->tags),
-                ]);
-            }
+            $filteredBlogs = $allBlogs->filter(function($blog) use ($tag) {
+                if (!$blog->tags || !is_array($blog->tags)) {
+                    return false;
+                }
 
-            // Search blogs by both tag slug and name for backward compatibility
-            // Use case-insensitive COLLATE for Turkish character support
-            $query = Blog::published()
-                ->where(function ($q) use ($tag) {
-                    // Search by slug (new format)
-                    $q->where(function ($subQ) use ($tag) {
-                        $subQ->whereRaw("LOWER(CAST(tags AS CHAR)) COLLATE utf8mb4_unicode_ci LIKE LOWER(?)", ['%"' . $tag->slug . '"%'])
-                             ->orWhereRaw("LOWER(CAST(tags AS CHAR)) COLLATE utf8mb4_unicode_ci LIKE LOWER(?)", ['%"' . str_replace('-', ' ', $tag->slug) . '"%']);
-                    })
-                    // Also search by name (old format for existing records)
-                    ->orWhere(function ($subQ) use ($tag) {
-                        $subQ->whereRaw("LOWER(CAST(tags AS CHAR)) COLLATE utf8mb4_unicode_ci LIKE LOWER(?)", ['%"' . $tag->name . '"%'])
-                             ->orWhereRaw("LOWER(CAST(tags AS CHAR)) COLLATE utf8mb4_unicode_ci LIKE LOWER(?)", ['%"' . mb_strtolower($tag->name, 'UTF-8') . '"%']);
-                    });
-                })
-                ->with(['category', 'author']);
+                foreach ($blog->tags as $blogTag) {
+                    // Normalize both strings for comparison (lowercase, trim)
+                    $normalizedBlogTag = mb_strtolower(trim($blogTag), 'UTF-8');
+                    $normalizedSearchName = mb_strtolower(trim($tag->name), 'UTF-8');
+                    $normalizedSearchSlug = mb_strtolower(trim($tag->slug), 'UTF-8');
 
-            // Log the SQL query
-            $sql = $query->toSql();
-            $bindings = $query->getBindings();
-            Log::info('SQL Query:', ['sql' => $sql, 'bindings' => $bindings]);
+                    // Compare with both name and slug
+                    if ($normalizedBlogTag === $normalizedSearchName ||
+                        $normalizedBlogTag === $normalizedSearchSlug ||
+                        $normalizedBlogTag === str_replace('-', ' ', $normalizedSearchSlug)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
 
             // Search functionality
             if (request()->has('search') && request()->search) {
-                $searchTerm = request()->search;
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->where('title', 'like', "%{$searchTerm}%")
-                      ->orWhere('excerpt', 'like', "%{$searchTerm}%")
-                      ->orWhere('content', 'like', "%{$searchTerm}%");
+                $searchTerm = mb_strtolower(request()->search, 'UTF-8');
+                $filteredBlogs = $filteredBlogs->filter(function($blog) use ($searchTerm) {
+                    $title = mb_strtolower($blog->title ?? '', 'UTF-8');
+                    $excerpt = mb_strtolower($blog->excerpt ?? '', 'UTF-8');
+                    $content = mb_strtolower($blog->content ?? '', 'UTF-8');
+
+                    return str_contains($title, $searchTerm) ||
+                           str_contains($excerpt, $searchTerm) ||
+                           str_contains($content, $searchTerm);
                 });
             }
 
-            // Order by published date
-            $query->latest('published_at');
+            // Sort by published date
+            $sortedBlogs = $filteredBlogs->sortByDesc('published_at');
 
-            // Execute query and log results
-            $blogs = $query->paginate(9);
+            // Manual pagination
+            $page = request()->get('page', 1);
+            $perPage = 9;
+            $offset = ($page - 1) * $perPage;
 
-            Log::info('Query Results:', [
-                'total_found' => $blogs->total(),
-                'current_page' => $blogs->currentPage(),
-                'per_page' => $blogs->perPage(),
-            ]);
+            $paginatedBlogs = $sortedBlogs->slice($offset, $perPage)->values();
+            $total = $sortedBlogs->count();
 
-            if ($blogs->count() > 0) {
-                Log::info('Found Blogs:');
-                foreach ($blogs as $blog) {
-                    Log::info('- Blog ID ' . $blog->id, [
-                        'title' => $blog->title,
-                        'tags' => $blog->tags,
-                    ]);
-                }
-            } else {
-                Log::warning('NO BLOGS FOUND!');
-                Log::info('Trying manual search...');
-
-                // Manual check - does ANY blog have this tag in ANY format?
-                $manualCheck = Blog::published()->get()->filter(function($blog) use ($tag) {
-                    if (!$blog->tags) return false;
-
-                    foreach ($blog->tags as $blogTag) {
-                        Log::info('Comparing:', [
-                            'blog_tag' => $blogTag,
-                            'search_slug' => $tag->slug,
-                            'search_name' => $tag->name,
-                            'matches_slug' => ($blogTag === $tag->slug),
-                            'matches_name' => ($blogTag === $tag->name),
-                        ]);
-
-                        if ($blogTag === $tag->slug || $blogTag === $tag->name) {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-
-                Log::info('Manual Search Results: ' . $manualCheck->count() . ' blogs found');
-                if ($manualCheck->count() > 0) {
-                    foreach ($manualCheck as $blog) {
-                        Log::info('Manual found: ' . $blog->title, ['tags' => $blog->tags]);
-                    }
-                }
-            }
-
-            Log::info('=== TAG PAGE DEBUG END ===');
+            $blogs = new \Illuminate\Pagination\LengthAwarePaginator(
+                $paginatedBlogs,
+                $total,
+                $perPage,
+                $page,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
 
             // Get categories for sidebar
             $categories = BlogCategory::active()

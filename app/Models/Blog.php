@@ -262,7 +262,7 @@ class Blog extends Model
     }
 
     /**
-     * Get related blogs by tags.
+     * Get related blogs by tags (case-insensitive for Turkish characters).
      */
     public function getRelatedBlogsByTags(int $limit = 5): \Illuminate\Database\Eloquent\Collection
     {
@@ -270,22 +270,32 @@ class Blog extends Model
             return collect();
         }
 
-        return self::where('id', '!=', $this->id)
+        // Use PHP collection filter for Turkish character support
+        $allBlogs = self::where('id', '!=', $this->id)
             ->where('status', true)
-            ->where(function ($query) {
-                foreach ($this->tags as $tag) {
-                    $query->orWhere(function ($q) use ($tag) {
-                        $q->whereJsonContains('tags', $tag)
-                          ->orWhere('tags', 'like', '%"' . $tag . '"%');
-                    });
-                }
-            })
-            ->limit($limit)
             ->get();
+
+        $normalizedCurrentTags = array_map(function($tag) {
+            return mb_strtolower(trim($tag), 'UTF-8');
+        }, $this->tags);
+
+        return $allBlogs->filter(function($blog) use ($normalizedCurrentTags) {
+            if (!$blog->tags || !is_array($blog->tags)) {
+                return false;
+            }
+
+            foreach ($blog->tags as $blogTag) {
+                $normalizedBlogTag = mb_strtolower(trim($blogTag), 'UTF-8');
+                if (in_array($normalizedBlogTag, $normalizedCurrentTags)) {
+                    return true;
+                }
+            }
+            return false;
+        })->take($limit);
     }
 
     /**
-     * Get tags as BlogTag models.
+     * Get tags as BlogTag models (case-insensitive for Turkish characters).
      */
     public function getTagModels(): \Illuminate\Database\Eloquent\Collection
     {
@@ -293,14 +303,31 @@ class Blog extends Model
             return collect();
         }
 
-        return \App\Models\BlogTag::whereIn('slug', $this->tags)->get();
+        // Get all tags and filter with case-insensitive comparison
+        $allTags = \App\Models\BlogTag::all();
+        $normalizedBlogTags = array_map(function($tag) {
+            return mb_strtolower(trim($tag), 'UTF-8');
+        }, $this->tags);
+
+        return $allTags->filter(function($tag) use ($normalizedBlogTags) {
+            $normalizedName = mb_strtolower(trim($tag->name), 'UTF-8');
+            $normalizedSlug = mb_strtolower(trim($tag->slug), 'UTF-8');
+
+            return in_array($normalizedName, $normalizedBlogTags) ||
+                   in_array($normalizedSlug, $normalizedBlogTags);
+        });
     }
 
     /**
-     * Get tag model by slug.
+     * Get tag model by slug (case-insensitive for Turkish characters).
      */
     public function getTagModelBySlug(string $tagSlug): ?\App\Models\BlogTag
     {
-        return \App\Models\BlogTag::where('slug', $tagSlug)->first();
+        $normalizedSearch = mb_strtolower(trim($tagSlug), 'UTF-8');
+
+        return \App\Models\BlogTag::all()->first(function($tag) use ($normalizedSearch) {
+            $normalizedSlug = mb_strtolower(trim($tag->slug), 'UTF-8');
+            return $normalizedSlug === $normalizedSearch;
+        });
     }
 }
