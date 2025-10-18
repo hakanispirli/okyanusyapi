@@ -25,16 +25,20 @@
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="theme-color" content="#000000">
 
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" href="/favicon.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/favicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="/favicon.png">
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json">
 
     <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
-    <link rel="shortcut icon" href="/favicon.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
 
     <!-- Fonts - Inter Font Stack with Turkish Support -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,6 +50,26 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17663218192"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'AW-17663218192');
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KEWSDSCXM4"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-KEWSDSCXM4');
+    </script>
 </head>
 
 <body class="font-sans antialiased">
