@@ -107,6 +107,9 @@
     </div>
     @include('frontend.partials.footer')
 
+    <!-- Mobile Phone Button -->
+    <x-phone-button />
+
 </body>
 
 </html>
