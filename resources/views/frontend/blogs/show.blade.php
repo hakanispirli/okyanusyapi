@@ -1,26 +1,26 @@
 <x-app-layout :seoData="$seoData">
     {{-- Breadcrumb --}}
     <nav class="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <ol class="flex items-center space-x-2 text-sm">
-                <li>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+            <ol class="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm overflow-x-auto scrollbar-hide">
+                <li class="flex-shrink-0">
                     <a href="{{ route('home') }}" class="text-gray-500 hover:text-primary-600 transition-colors duration-200">
-                        <x-lucide-house class="w-4 h-4" />
+                        <x-lucide-house class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </a>
                 </li>
-                <li class="flex items-center">
-                    <x-lucide-chevron-right class="w-4 h-4 text-gray-400 mx-2" />
-                    <a href="{{ route('blogs') }}" class="text-gray-500 hover:text-primary-600 transition-colors duration-200">Uygulamalar</a>
+                <li class="flex items-center flex-shrink-0">
+                    <x-lucide-chevron-right class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 mx-1 sm:mx-2" />
+                    <a href="{{ route('blogs') }}" class="text-gray-500 hover:text-primary-600 transition-colors duration-200 whitespace-nowrap">Uygulamalar</a>
                 </li>
-                <li class="flex items-center">
-                    <x-lucide-chevron-right class="w-4 h-4 text-gray-400 mx-2" />
-                    <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded-full text-xs font-medium">
+                <li class="flex items-center flex-shrink-0">
+                    <x-lucide-chevron-right class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 mx-1 sm:mx-2" />
+                    <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap">
                         {{ $blog->category->name }}
                     </span>
                 </li>
-                <li class="flex items-center">
-                    <x-lucide-chevron-right class="w-4 h-4 text-gray-400 mx-2" />
-                    <span class="text-gray-900 font-medium truncate max-w-xs">{{ $blog->title }}</span>
+                <li class="flex items-center min-w-0">
+                    <x-lucide-chevron-right class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 mx-1 sm:mx-2 flex-shrink-0" />
+                    <span class="text-gray-900 font-medium truncate" title="{{ $blog->title }}">{{ $blog->title }}</span>
                 </li>
             </ol>
         </div>
