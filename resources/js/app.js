@@ -28,28 +28,20 @@ document.addEventListener('DOMContentLoaded', function() {
         return `phone_call_${timestamp}_${random}`;
     }
 
-    // Track phone link clicks - Push to dataLayer for GTM to handle
+    // Track phone link clicks - Send conversion directly via gtag
     function trackPhoneClick(event) {
-        // Initialize dataLayer if not exists
-        window.dataLayer = window.dataLayer || [];
+        // Check if gtag is available
+        if (typeof gtag !== 'undefined') {
+            const transactionId = generateTransactionId();
 
-        const transactionId = generateTransactionId();
-
-        // Push event to dataLayer - GTM will handle the conversion
-        // Transaction ID is sent both at top-level and nested for easier access in GTM
-        window.dataLayer.push({
-            'event': 'phone_call_conversion',
-            'phone_number': event.currentTarget.getAttribute('href')?.replace('tel:', '') || '',
-            'transaction_id': transactionId,
-            'conversion_value': 1.0,
-            'conversion_currency': 'TRY',
-            'conversion_data': {
+            // Send conversion event directly to Google Ads
+            gtag('event', 'conversion', {
                 'send_to': 'AW-17663218192/pn5ICP7v7K8bEJCkveZB',
                 'value': 1.0,
                 'currency': 'TRY',
                 'transaction_id': transactionId
-            }
-        });
+            });
+        }
     }
 
     // Attach click listener to all tel: links
