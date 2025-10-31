@@ -36,9 +36,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const transactionId = generateTransactionId();
 
         // Push event to dataLayer - GTM will handle the conversion
+        // Transaction ID is sent both at top-level and nested for easier access in GTM
         window.dataLayer.push({
             'event': 'phone_call_conversion',
             'phone_number': event.currentTarget.getAttribute('href')?.replace('tel:', '') || '',
+            'transaction_id': transactionId,
+            'conversion_value': 1.0,
+            'conversion_currency': 'TRY',
             'conversion_data': {
                 'send_to': 'AW-17663218192/pn5ICP7v7K8bEJCkveZB',
                 'value': 1.0,
