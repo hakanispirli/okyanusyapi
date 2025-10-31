@@ -21,15 +21,23 @@ Alpine.start();
  * Tracks conversions when user clicks on phone links
  */
 document.addEventListener('DOMContentLoaded', function() {
+    // Generate unique transaction ID for phone call conversion
+    function generateTransactionId() {
+        const timestamp = Date.now();
+        const random = Math.floor(Math.random() * 1000000);
+        return `phone_call_${timestamp}_${random}`;
+    }
+
     // Track phone link clicks
     function trackPhoneClick(event) {
         // Check if gtag is available
         if (typeof gtag !== 'undefined') {
+            const transactionId = generateTransactionId();
             gtag('event', 'conversion', {
                 'send_to': 'AW-17663218192/pn5ICP7v7K8bEJCkveZB',
                 'value': 1.0,
                 'currency': 'TRY',
-                'transaction_id': ''
+                'transaction_id': transactionId
             });
         }
     }
