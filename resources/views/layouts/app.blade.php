@@ -79,8 +79,6 @@
     })(window,document,'script','dataLayer','GTM-W3QQNK85');</script>
     <!-- End Google Tag Manager -->
 
-    <!-- Event snippet for Satın alma işlemi conversion page -->
-    <script> gtag('event', 'conversion', { 'send_to': 'AW-17663218192/pn5ICP7v7K8bEJCkveZB', 'value': 1.0, 'currency': 'TRY', 'transaction_id': '' }); </script>
 </head>
 
 <body class="font-sans antialiased">
