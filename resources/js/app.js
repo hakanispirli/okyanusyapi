@@ -28,18 +28,24 @@ document.addEventListener('DOMContentLoaded', function() {
         return `phone_call_${timestamp}_${random}`;
     }
 
-    // Track phone link clicks
+    // Track phone link clicks - Push to dataLayer for GTM to handle
     function trackPhoneClick(event) {
-        // Check if gtag is available
-        if (typeof gtag !== 'undefined') {
-            const transactionId = generateTransactionId();
-            gtag('event', 'conversion', {
+        // Initialize dataLayer if not exists
+        window.dataLayer = window.dataLayer || [];
+
+        const transactionId = generateTransactionId();
+
+        // Push event to dataLayer - GTM will handle the conversion
+        window.dataLayer.push({
+            'event': 'phone_call_conversion',
+            'phone_number': event.currentTarget.getAttribute('href')?.replace('tel:', '') || '',
+            'conversion_data': {
                 'send_to': 'AW-17663218192/pn5ICP7v7K8bEJCkveZB',
                 'value': 1.0,
                 'currency': 'TRY',
                 'transaction_id': transactionId
-            });
-        }
+            }
+        });
     }
 
     // Attach click listener to all tel: links
