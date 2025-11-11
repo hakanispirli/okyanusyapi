@@ -10,6 +10,8 @@ export default () => ({
     isTransitioning: false,
     touchStartX: 0,
     touchEndX: 0,
+    imagesLoaded: {},
+    isVisible: true,
 
     slides: [
         {
@@ -45,30 +47,53 @@ export default () => ({
      * Initialize slider
      */
     init() {
-        this.startAutoplay();
+        // Preload only first and second images for better initial load
+        this.preloadImage(0);
+        if (this.slides.length > 1) {
+            setTimeout(() => this.preloadImage(1), 100);
+        }
 
-        // Preload images
-        this.slides.forEach(slide => {
-            const img = new Image();
-            img.src = slide.image;
-        });
+        // Start autoplay after initial load
+        setTimeout(() => {
+            this.startAutoplay();
+        }, 500);
 
-        // Keyboard navigation
+        // Intersection Observer for visibility
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    this.isVisible = entry.isIntersecting;
+                    if (!entry.isIntersecting) {
+                        this.stopAutoplay();
+                    } else {
+                        this.startAutoplay();
+                    }
+                });
+            }, { threshold: 0.5 });
+            observer.observe(this.$el);
+        }
+
+        // Keyboard navigation with debounce
+        let keyDebounce;
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') this.prev();
-            if (e.key === 'ArrowRight') this.next();
+            if (this.isTransitioning) return;
+            clearTimeout(keyDebounce);
+            keyDebounce = setTimeout(() => {
+                if (e.key === 'ArrowLeft') this.prev();
+                if (e.key === 'ArrowRight') this.next();
+            }, 100);
         });
 
         // Pause on visibility change
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 this.stopAutoplay();
-            } else {
+            } else if (this.isVisible) {
                 this.startAutoplay();
             }
         });
 
-        // Touch/Swipe support
+        // Touch/Swipe support with passive listeners
         this.$el.addEventListener('touchstart', (e) => {
             this.touchStartX = e.changedTouches[0].screenX;
         }, { passive: true });
@@ -77,6 +102,31 @@ export default () => ({
             this.touchEndX = e.changedTouches[0].screenX;
             this.handleSwipe();
         }, { passive: true });
+
+        // Preload remaining images lazily
+        if (this.slides.length > 2) {
+            setTimeout(() => {
+                for (let i = 2; i < this.slides.length; i++) {
+                    this.preloadImage(i);
+                }
+            }, 2000);
+        }
+    },
+
+    /**
+     * Preload image
+     */
+    preloadImage(index) {
+        if (this.imagesLoaded[index]) return;
+        
+        const slide = this.slides[index];
+        if (!slide) return;
+
+        const img = new Image();
+        img.onload = () => {
+            this.imagesLoaded[index] = true;
+        };
+        img.src = slide.image;
     },
 
     /**
@@ -99,11 +149,22 @@ export default () => ({
      * Go to specific slide
      */
     goToSlide(index) {
-        if (this.isTransitioning) return;
+        if (this.isTransitioning || index === this.currentSlide) return;
+
+        // Preload next image if not loaded
+        this.preloadImage(index);
 
         this.isTransitioning = true;
         this.currentSlide = index;
         this.restartAutoplay();
+
+        // Preload adjacent images
+        const nextIndex = (index + 1) % this.slides.length;
+        const prevIndex = (index - 1 + this.slides.length) % this.slides.length;
+        setTimeout(() => {
+            this.preloadImage(nextIndex);
+            this.preloadImage(prevIndex);
+        }, 100);
 
         setTimeout(() => {
             this.isTransitioning = false;
@@ -130,8 +191,11 @@ export default () => ({
      * Start autoplay
      */
     startAutoplay() {
+        if (this.autoplayInterval) return;
         this.autoplayInterval = setInterval(() => {
-            this.next();
+            if (this.isVisible && !document.hidden) {
+                this.next();
+            }
         }, this.autoplayDelay);
     },
 

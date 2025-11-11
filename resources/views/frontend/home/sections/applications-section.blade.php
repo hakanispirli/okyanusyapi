@@ -23,11 +23,15 @@
                 <div class="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-4 px-4 scroll-smooth">
                     @foreach($applications as $index => $blog)
                         <div class="flex-none w-[85%] sm:w-[45%] snap-center">
-                            <div class="group relative h-[420px] bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                            <div class="group relative h-[420px] bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300" style="contain: layout style paint;">
                                 @if($blog->featured_image)
                                     <img src="{{ asset($blog->featured_image) }}"
                                          alt="{{ $blog->featured_image_alt ?? $blog->title }}"
-                                         class="absolute inset-0 w-full h-full object-cover">
+                                         loading="lazy"
+                                         decoding="async"
+                                         class="absolute inset-0 w-full h-full object-cover"
+                                         style="will-change: auto;">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                                 @else
                                     <div class="absolute inset-0 bg-white/10"></div>
                                 @endif
@@ -41,18 +45,12 @@
                                         </div>
                                     @endif
 
-                                    <a href="{{ route('blogs.show', $blog) }}" class="block group/link">
-                                        <h3 class="text-2xl font-display font-bold text-white mb-3 tracking-tight transition-all duration-300 relative
-                                                   [text-shadow:_0_2px_8px_rgb(0_0_0_/_60%),_0_4px_16px_rgb(0_0_0_/_40%)]
-                                                   group-hover/link:[text-shadow:_0_2px_12px_rgb(0_0_0_/_70%),_0_4px_20px_rgb(0_0_0_/_50%),_0_0_30px_rgb(59_130_246_/_60%)]
-                                                   decoration-primary-400 decoration-2 underline underline-offset-4
-                                                   group-hover/link:decoration-4 group-hover/link:decoration-primary-300 group-hover/link:text-primary-100">
-                                            {{ Str::limit($blog->title, 60) }}
-                                        </h3>
-                                    </a>
+                                    <h3 class="text-2xl font-display font-bold text-white mb-3 tracking-tight">
+                                        {{ Str::limit($blog->title, 60) }}
+                                    </h3>
 
                                     @if($blog->excerpt)
-                                        <p class="text-white text-sm font-light leading-relaxed mb-4 drop-shadow-md line-clamp-2">
+                                        <p class="text-white/90 text-sm leading-relaxed mb-4 line-clamp-2">
                                             {{ Str::limit($blog->excerpt, 100) }}
                                         </p>
                                     @endif
@@ -69,7 +67,7 @@
                                         </div>
                                     </div>
 
-                                    <a href="{{ route('blogs.show', $blog) }}" class="inline-flex items-center gap-2 bg-white/90 text-gray-900 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-white transition-colors duration-200 shadow-lg">
+                                    <a href="{{ route('blogs.show', $blog) }}" class="inline-flex items-center gap-2 bg-white text-gray-900 font-medium text-sm px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-colors duration-200">
                                         <span>Detaylı Bilgi</span>
                                         <x-lucide-arrow-right class="w-4 h-4" />
                                     </a>
@@ -120,11 +118,15 @@
                     @endphp
 
                     <div class="{{ $gridClass }}">
-                        <div class="group relative h-full {{ $minHeight }} bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                        <div class="group relative h-full {{ $minHeight }} bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300" style="contain: layout style paint;">
                             @if($blog->featured_image)
                                 <img src="{{ asset($blog->featured_image) }}"
                                      alt="{{ $blog->featured_image_alt ?? $blog->title }}"
-                                     class="absolute inset-0 w-full h-full object-cover">
+                                     loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                                     decoding="async"
+                                     class="absolute inset-0 w-full h-full object-cover"
+                                     style="will-change: auto;">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                             @else
                                 <div class="absolute inset-0 bg-white/10"></div>
                             @endif
@@ -138,24 +140,18 @@
                                     </div>
                                 @endif
 
-                                <a href="{{ route('blogs.show', $blog) }}" class="block group/link">
-                                    <h3 class="{{ $titleSize }} font-display font-bold text-white {{ $isLargeCard ? 'mb-4' : ($isSmallCard ? 'mb-2' : 'mb-3') }} tracking-tight transition-all duration-300 relative
-                                               [text-shadow:_0_2px_8px_rgb(0_0_0_/_60%),_0_4px_16px_rgb(0_0_0_/_40%)]
-                                               group-hover/link:[text-shadow:_0_2px_12px_rgb(0_0_0_/_70%),_0_4px_20px_rgb(0_0_0_/_50%),_0_0_30px_rgb(59_130_246_/_60%)]
-                                               decoration-primary-400 {{ $isLargeCard ? 'decoration-4 underline-offset-8' : ($isSmallCard ? 'decoration-2 underline-offset-2' : 'decoration-2 underline-offset-4') }} underline
-                                               group-hover/link:{{ $isLargeCard ? 'decoration-[6px]' : 'decoration-4' }} group-hover/link:decoration-primary-300 group-hover/link:text-primary-100">
-                                        @if($isLargeCard)
-                                            {{ Str::limit($blog->title, 80) }}
-                                        @elseif($isSmallCard)
-                                            {{ Str::limit($blog->title, 50) }}
-                                        @else
-                                            {{ Str::limit($blog->title, 60) }}
-                                        @endif
-                                    </h3>
-                                </a>
+                                <h3 class="{{ $titleSize }} font-display font-bold text-white {{ $isLargeCard ? 'mb-4' : ($isSmallCard ? 'mb-2' : 'mb-3') }} tracking-tight">
+                                    @if($isLargeCard)
+                                        {{ Str::limit($blog->title, 80) }}
+                                    @elseif($isSmallCard)
+                                        {{ Str::limit($blog->title, 50) }}
+                                    @else
+                                        {{ Str::limit($blog->title, 60) }}
+                                    @endif
+                                </h3>
 
                                 @if($blog->excerpt)
-                                    <p class="text-white {{ $descSize }} font-light {{ $isLargeCard ? 'leading-relaxed mb-6 max-w-lg' : ($isSmallCard ? 'mb-3' : 'leading-relaxed mb-4') }} drop-shadow-md line-clamp-2">
+                                    <p class="text-white/90 {{ $descSize }} {{ $isLargeCard ? 'leading-relaxed mb-6 max-w-lg' : ($isSmallCard ? 'mb-3' : 'leading-relaxed mb-4') }} line-clamp-2">
                                         @if($isLargeCard)
                                             {{ Str::limit($blog->excerpt, 150) }}
                                         @else
@@ -176,7 +172,7 @@
                                     </div>
                                 </div>
 
-                                <a href="{{ route('blogs.show', $blog) }}" class="inline-flex items-center gap-2 bg-white/90 text-gray-900 font-semibold {{ $buttonSize }} px-4 py-2 rounded-lg hover:bg-white transition-colors duration-200 shadow-lg">
+                                <a href="{{ route('blogs.show', $blog) }}" class="inline-flex items-center gap-2 bg-white text-gray-900 font-medium {{ $buttonSize }} {{ $isLargeCard ? 'px-6 py-3' : 'px-5 py-2.5' }} rounded-xl hover:bg-gray-50 transition-colors duration-200">
                                     <span>{{ $isSmallCard ? 'Detay' : 'Detaylı Bilgi' }}</span>
                                     <x-lucide-arrow-right class="{{ $isSmallCard ? 'w-4 h-4' : 'w-5 h-5' }}" />
                                 </a>
@@ -206,4 +202,28 @@
 
     </div>
 </section>
+
+<style>
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    /* Performance optimizations */
+    #applications img {
+        content-visibility: auto;
+    }
+    
+    /* Optimize animations */
+    @media (prefers-reduced-motion: reduce) {
+        #applications * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
 

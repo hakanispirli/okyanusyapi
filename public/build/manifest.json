@@ -4,7 +4,7 @@
     "name": "alpine"
   },
   "resources/css/app.css": {
-    "file": "assets/app-CpQiU6S9.css",
+    "file": "assets/app-BwLV3fby.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -13,7 +13,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-BcaDeHM-.js",
+    "file": "assets/app-C2K9oXAl.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

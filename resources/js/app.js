@@ -59,14 +59,21 @@ document.addEventListener('DOMContentLoaded', function() {
     attachPhoneTracking();
 
     // Re-attach after dynamic content changes (for Alpine.js components)
-    // Use MutationObserver to watch for new phone links
+    // Use MutationObserver with debouncing to watch for new phone links
+    let debounceTimer;
     const observer = new MutationObserver(function(mutations) {
-        attachPhoneTracking();
+        // Debounce to avoid excessive calls
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            attachPhoneTracking();
+        }, 250);
     });
 
-    // Observe changes to the document body
+    // Observe changes to the document body with optimized config
     observer.observe(document.body, {
         childList: true,
-        subtree: true
+        subtree: true,
+        attributes: false,
+        characterData: false
     });
 });
