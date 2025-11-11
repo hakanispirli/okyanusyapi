@@ -18,6 +18,8 @@
                          :loading="index === 0 ? 'eager' : 'lazy'"
                          :fetchpriority="index === 0 ? 'high' : 'low'"
                          decoding="async"
+                         width="1920"
+                         height="1080"
                          style="will-change: auto;">
                     <!-- Gradient Overlay -->
                     <div class="absolute inset-0 bg-gradient-to-r from-corporate-900/95 via-corporate-900/80 to-corporate-900/60"></div>

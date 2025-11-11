@@ -24,9 +24,24 @@ export default defineConfig({
         // Optimize chunk splitting
         rollupOptions: {
             output: {
-                manualChunks: {
-                    // Separate vendor chunks for better caching
-                    'alpine': ['alpinejs'],
+                manualChunks(id) {
+                    // Vendor chunks
+                    if (id.includes('node_modules')) {
+                        if (id.includes('alpinejs')) {
+                            return 'alpine';
+                        }
+                        return 'vendor';
+                    }
+                    // Component chunks
+                    if (id.includes('hero-slider')) {
+                        return 'hero';
+                    }
+                    if (id.includes('photo-gallery')) {
+                        return 'gallery';
+                    }
+                    if (id.includes('quill-editor')) {
+                        return 'editor';
+                    }
                 },
             },
         },

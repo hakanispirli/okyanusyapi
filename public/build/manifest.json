@@ -3,6 +3,32 @@
     "file": "assets/alpine-DrFxomJY.js",
     "name": "alpine"
   },
+  "_editor-84Vb-EDa.js": {
+    "file": "assets/editor-84Vb-EDa.js",
+    "name": "editor",
+    "imports": [
+      "_vendor-D7pZ4w-L.js"
+    ]
+  },
+  "_gallery-jL8o-5Ey.js": {
+    "file": "assets/gallery-jL8o-5Ey.js",
+    "name": "gallery"
+  },
+  "_hero-sndfDtLf.js": {
+    "file": "assets/hero-sndfDtLf.js",
+    "name": "hero"
+  },
+  "_vendor-CDOvlk5V.css": {
+    "file": "assets/vendor-CDOvlk5V.css",
+    "src": "_vendor-CDOvlk5V.css"
+  },
+  "_vendor-D7pZ4w-L.js": {
+    "file": "assets/vendor-D7pZ4w-L.js",
+    "name": "vendor",
+    "css": [
+      "assets/vendor-CDOvlk5V.css"
+    ]
+  },
   "resources/css/app.css": {
     "file": "assets/app-BwLV3fby.css",
     "src": "resources/css/app.css",
@@ -13,15 +39,16 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-C2K9oXAl.js",
+    "file": "assets/app-D2CKzka2.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_alpine-DrFxomJY.js"
-    ],
-    "css": [
-      "assets/app-CDOvlk5V.css"
+      "_vendor-D7pZ4w-L.js",
+      "_alpine-DrFxomJY.js",
+      "_hero-sndfDtLf.js",
+      "_gallery-jL8o-5Ey.js",
+      "_editor-84Vb-EDa.js"
     ]
   }
 }
