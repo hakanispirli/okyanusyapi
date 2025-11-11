@@ -22,29 +22,26 @@
                 <div class="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-4 px-4 scroll-smooth">
                     @foreach($services as $index => $service)
                         <div class="flex-none w-[85%] sm:w-[45%] snap-center">
-                            <div class="group relative h-[420px] bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                            <div class="group relative h-[420px] bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100" style="contain: layout style paint;">
                                 @if($service->hero_image)
                                     <img src="{{ asset($service->hero_image) }}"
                                          alt="{{ $service->name }}"
-                                         class="absolute inset-0 w-full h-full object-cover">
+                                         loading="lazy"
+                                         decoding="async"
+                                         class="absolute inset-0 w-full h-full object-cover"
+                                         style="will-change: auto;">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                                 @else
                                     <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200"></div>
                                 @endif
                                 <div class="relative h-full p-8 flex flex-col justify-end">
-                                    <a href="{{ route('services.show', $service) }}" class="block group">
-                                        <h3 class="text-2xl font-display font-bold text-white mb-3 tracking-tight transition-all duration-300 relative
-                                                   [text-shadow:_0_2px_8px_rgb(0_0_0_/_60%),_0_4px_16px_rgb(0_0_0_/_40%)]
-                                                   group-hover:[text-shadow:_0_2px_12px_rgb(0_0_0_/_70%),_0_4px_20px_rgb(0_0_0_/_50%),_0_0_30px_rgb(59_130_246_/_60%)]
-                                                   decoration-primary-400 decoration-2 underline underline-offset-4
-                                                   group-hover:decoration-4 group-hover:decoration-primary-300 group-hover:text-primary-100">
-                                            {{ $service->title ?? $service->name }}
-                                        </h3>
-                                    </a>
-                                    <p class="text-white/90 text-sm font-light leading-relaxed mb-4 drop-shadow-md">
+                                    <h3 class="text-2xl font-display font-bold text-white mb-3 tracking-tight">
+                                        {{ $service->title ?? $service->name }}
+                                    </h3>
+                                    <p class="text-white/90 text-sm leading-relaxed mb-4">
                                         {{ Str::limit($service->description, 100) }}
                                     </p>
-                                    <a href="{{ route('services.show', $service) }}" class="inline-flex items-center gap-2 bg-white/90 text-gray-900 font-semibold text-sm px-4 py-2 rounded-lg hover:bg-white transition-colors duration-200 shadow-lg">
+                                    <a href="{{ route('services.show', $service) }}" class="inline-flex items-center gap-2 bg-white text-gray-900 font-medium text-sm px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-colors duration-200">
                                         <span>Detaylı Bilgi</span>
                                         <x-lucide-arrow-right class="w-4 h-4" />
                                     </a>
@@ -101,33 +98,30 @@
                     @endphp
 
                     <div class="{{ $gridClass }}">
-                        <div class="group relative h-full {{ $minHeight }} bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+                        <div class="group relative h-full {{ $minHeight }} bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100" style="contain: layout style paint;">
                             @if($service->hero_image)
                                 <img src="{{ asset($service->hero_image) }}"
                                      alt="{{ $service->name }}"
-                                     class="absolute inset-0 w-full h-full object-cover">
+                                     loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                                     decoding="async"
+                                     class="absolute inset-0 w-full h-full object-cover"
+                                     style="will-change: auto;">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                             @else
                                 <div class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200"></div>
                             @endif
                             <div class="relative h-full {{ $padding }} flex flex-col justify-end">
-                                <a href="{{ route('services.show', $service) }}" class="block group">
-                                    <h3 class="{{ $titleSize }} font-display font-bold text-white {{ $isLargeCard ? 'mb-4' : ($isSmallCard ? 'mb-2' : 'mb-3') }} tracking-tight transition-all duration-300 relative
-                                               [text-shadow:_0_2px_8px_rgb(0_0_0_/_60%),_0_4px_16px_rgb(0_0_0_/_40%)]
-                                               group-hover:[text-shadow:_0_2px_12px_rgb(0_0_0_/_70%),_0_4px_20px_rgb(0_0_0_/_50%),_0_0_30px_rgb(59_130_246_/_60%)]
-                                               decoration-primary-400 {{ $isLargeCard ? 'decoration-4 underline-offset-8' : ($isSmallCard ? 'decoration-2 underline-offset-2' : 'decoration-2 underline-offset-4') }} underline
-                                               group-hover:{{ $isLargeCard ? 'decoration-[6px]' : 'decoration-4' }} group-hover:decoration-primary-300 group-hover:text-primary-100">
-                                        {{ $service->title ?? $service->name }}
-                                    </h3>
-                                </a>
-                                <p class="text-white/90 {{ $descSize }} font-light {{ $isLargeCard ? 'leading-relaxed mb-6 max-w-lg' : ($isSmallCard ? 'mb-3' : 'leading-relaxed mb-4') }} drop-shadow-md">
+                                <h3 class="{{ $titleSize }} font-display font-bold text-white {{ $isLargeCard ? 'mb-4' : ($isSmallCard ? 'mb-2' : 'mb-3') }} tracking-tight">
+                                    {{ $service->title ?? $service->name }}
+                                </h3>
+                                <p class="text-white/90 {{ $descSize }} {{ $isLargeCard ? 'leading-relaxed mb-6 max-w-lg' : ($isSmallCard ? 'mb-3' : 'leading-relaxed mb-4') }}">
                                     @if($isLargeCard)
                                         {{ Str::limit($service->description, 150) }}
                                     @else
                                         {{ Str::limit($service->description, 80) }}
                                     @endif
                                 </p>
-                                <a href="{{ route('services.show', $service) }}" class="inline-flex items-center gap-2 bg-white/90 text-gray-900 font-semibold {{ $buttonSize }} px-4 py-2 rounded-lg hover:bg-white transition-colors duration-200 shadow-lg">
+                                <a href="{{ route('services.show', $service) }}" class="inline-flex items-center gap-2 bg-white text-gray-900 font-medium {{ $buttonSize }} {{ $isLargeCard ? 'px-6 py-3' : 'px-5 py-2.5' }} rounded-xl hover:bg-gray-50 transition-colors duration-200">
                                     <span>{{ $isSmallCard ? 'Detay' : 'Detaylı Bilgi' }}</span>
                                     <x-lucide-arrow-right class="{{ $isSmallCard ? 'w-4 h-4' : 'w-5 h-5' }}" />
                                 </a>
@@ -157,6 +151,20 @@
     .scrollbar-hide {
         -ms-overflow-style: none;
         scrollbar-width: none;
+    }
+    
+    /* Performance optimizations */
+    #services img {
+        content-visibility: auto;
+    }
+    
+    /* Optimize animations */
+    @media (prefers-reduced-motion: reduce) {
+        #services * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
     }
 </style>
 
